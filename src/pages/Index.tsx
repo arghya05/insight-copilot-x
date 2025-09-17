@@ -6,6 +6,7 @@ import { AnomalyToggle } from "@/components/AnomalyToggle";
 import { PDFGallery } from "@/components/PDFGallery";
 import { supplyChainQAs } from "@/data/sampleData";
 import type { ChatMessage } from "@/data/sampleData";
+import algonomyLogo from "@/assets/algonomy-logo.png";
 
 const Index = () => {
   const [query, setQuery] = useState("");
@@ -53,7 +54,7 @@ const Index = () => {
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
             <img 
-              src="/src/assets/algonomy-logo.png" 
+              src={algonomyLogo} 
               alt="Algonomy Logo" 
               className="h-8 w-auto"
             />
