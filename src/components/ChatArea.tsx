@@ -491,6 +491,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
               <SuggestedQuestions 
                 questions={getNextQuestions(message.query)} 
                 onQuestionClick={handleQuestionClick}
+                isLoading={isLoading}
               />
             )}
           </div>
