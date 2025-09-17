@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AnswerCard } from "@/components/AnswerCard";
 import { SuggestedQuestions } from "@/components/SuggestedQuestions";
 import { AnomalyCard } from "@/components/AnomalyCard";
-import { supplyChainQAs, additionalQuestions } from "@/data/sampleData";
+import { supplyChainQAs, additionalQuestions, pdfDocuments } from "@/data/sampleData";
 import type { ChatMessage } from "@/data/sampleData";
 
 interface ChatAreaProps {
@@ -16,14 +16,19 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
   let idCounter = 0;
   const genId = () => `${Date.now()}-${++idCounter}`;
 
-  // Load comprehensive supply chain data
+  // Start with empty messages - no chat history
   useEffect(() => {
-    setMessages(supplyChainQAs.slice(0, 5));
+    setMessages([]);
   }, []);
 
   const addMessage = (message: ChatMessage) => {
     setMessages(prev => [...prev, message]);
   };
+
+  // Expose function to add messages from search bar
+  useEffect(() => {
+    (window as any).addMessageToChatArea = addMessage;
+  }, []);
 
   const filteredMessages = showAnomaliesOnly 
     ? messages.filter(msg => msg.type === 'anomaly')
@@ -64,8 +69,14 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
   };
 
   const handleQuestionClick = (question: string) => {
-    // Create realistic response based on question
-    const response = generateRealisticResponse(question);
+    // Find matching response from sample data or create realistic response
+    const matchingQA = supplyChainQAs.find(qa => 
+      qa.query.toLowerCase().includes(question.toLowerCase()) ||
+      question.toLowerCase().includes(qa.query.toLowerCase())
+    );
+    
+    const response = matchingQA ? matchingQA.content : generateRealisticResponse(question);
+    
     const newMessage: ChatMessage = {
       id: genId(),
       type: "answer",
@@ -178,9 +189,36 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
     <div className="flex-1 overflow-y-auto">
       <div className="space-y-6 p-6">
         {filteredMessages.length === 0 ? (
-          <div className="text-center text-muted-foreground py-12">
-            <p className="text-lg mb-2">Ready to analyze your supply chain data</p>
-            <p className="text-sm">Ask questions about freight, contracts, invoices, or supply chain operations</p>
+          <div className="text-center py-12">
+            <div className="max-w-2xl mx-auto">
+              <h2 className="text-2xl font-semibold text-foreground mb-3">
+                What would you like to analyze?
+              </h2>
+              <p className="text-muted-foreground mb-8">
+                Ask questions about supply chain, freight, contracts, or finance operations
+              </p>
+              
+              {/* Starter Question Hints */}
+              <div className="space-y-3 mb-8">
+                <p className="text-sm font-medium text-muted-foreground mb-4">Try asking:</p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => handleQuestionClick("What are the main freight cost anomalies this quarter?")}
+                    className="px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-left"
+                  >
+                    <div className="font-medium">Freight Cost Anomalies</div>
+                    <div className="text-sm opacity-80">Analyze cost spikes and overcharges</div>
+                  </button>
+                  <button
+                    onClick={() => handleQuestionClick("Which suppliers have the highest contract compliance risk?")}
+                    className="px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-left"
+                  >
+                    <div className="font-medium">Supplier Risk Analysis</div>
+                    <div className="text-sm opacity-80">Review contract compliance issues</div>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           filteredMessages.map((message) => (

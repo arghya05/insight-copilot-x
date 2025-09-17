@@ -3,6 +3,9 @@ import { SearchBar } from "@/components/SearchBar";
 import { ChatArea } from "@/components/ChatArea";
 import { DocumentViewer } from "@/components/DocumentViewer";
 import { AnomalyToggle } from "@/components/AnomalyToggle";
+import { PDFGallery } from "@/components/PDFGallery";
+import { supplyChainQAs } from "@/data/sampleData";
+import type { ChatMessage } from "@/data/sampleData";
 
 const Index = () => {
   const [query, setQuery] = useState("");
@@ -10,17 +13,29 @@ const Index = () => {
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
   const [highlightedText, setHighlightedText] = useState<string>("");
 
-  const handleSubmitQuery = (submittedQuery: string) => {
-    // This would connect to your backend API
-    console.log('Submitting query:', submittedQuery);
-    
-    // Call the chat area to add the new message
-    if ((window as any).submitQueryToChatArea) {
-      (window as any).submitQueryToChatArea(submittedQuery);
-    }
-    
-    setQuery("");
-  };
+      const handleSubmitQuery = (submittedQuery: string) => {
+        // Find matching response from sample data or create new one
+        const matchingQA = supplyChainQAs.find(qa => 
+          qa.query.toLowerCase().includes(submittedQuery.toLowerCase()) ||
+          submittedQuery.toLowerCase().includes(qa.query.toLowerCase())
+        );
+        
+        if (matchingQA) {
+          const newMessage: ChatMessage = {
+            id: Date.now().toString(),
+            type: "answer", 
+            query: submittedQuery,
+            content: matchingQA.content,
+            timestamp: new Date()
+          };
+          // Add to chat area messages
+          if ((window as any).addMessageToChatArea) {
+            (window as any).addMessageToChatArea(newMessage);
+          }
+        }
+        
+        setQuery("");
+      };
 
   return (
     <div className="min-h-screen bg-background">
@@ -60,6 +75,8 @@ const Index = () => {
             onDocumentSelect={setSelectedDocument}
             onHighlightText={setHighlightedText}
           />
+          
+          <PDFGallery onDocumentSelect={setSelectedDocument} />
         </div>
 
         {/* Document Viewer Panel */}
