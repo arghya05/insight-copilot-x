@@ -68,23 +68,28 @@ export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
     switch (chart.type) {
       case 'bar':
         return (
-          <div className="h-[300px] w-full">
+          <div className="h-[400px] w-full">
             <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chart.data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.3} />
+                <BarChart data={chart.data} margin={{ top: 30, right: 40, left: 60, bottom: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.2} />
                   <XAxis 
                     dataKey="name" 
                     stroke="hsl(var(--muted-foreground))" 
-                    fontSize={12}
+                    fontSize={11}
                     tickLine={false}
                     axisLine={false}
+                    height={50}
+                    interval={0}
+                    angle={-45}
+                    textAnchor="end"
                   />
                   <YAxis 
                     stroke="hsl(var(--muted-foreground))" 
-                    fontSize={12}
+                    fontSize={11}
                     tickLine={false}
                     axisLine={false}
+                    width={50}
                     tickFormatter={(value) => 
                       chart.title.toLowerCase().includes('cost') || 
                       chart.title.toLowerCase().includes('overcharge') ? 
@@ -101,14 +106,18 @@ export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
                       ]}
                     />} 
                   />
-                  <Legend />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    iconType="rect"
+                  />
                   {Object.keys(chart.config).map((key, i) => (
                     <Bar 
                       key={key} 
                       dataKey={key} 
                       fill={chartColors[i % chartColors.length]}
-                      radius={[4, 4, 0, 0]}
+                      radius={[6, 6, 0, 0]}
                       name={chart.config[key]?.label || key}
+                      maxBarSize={60}
                     />
                   ))}
                 </BarChart>
@@ -121,23 +130,28 @@ export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
       case 'trend':
         const xAxisKey = chart.type === 'trend' ? 'period' : 'name';
         return (
-          <div className="h-[300px] w-full">
+          <div className="h-[400px] w-full">
             <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chart.data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.3} />
+                <LineChart data={chart.data} margin={{ top: 30, right: 40, left: 60, bottom: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.2} />
                   <XAxis 
                     dataKey={xAxisKey} 
                     stroke="hsl(var(--muted-foreground))" 
-                    fontSize={12}
+                    fontSize={11}
                     tickLine={false}
                     axisLine={false}
+                    height={50}
+                    interval={0}
+                    angle={-45}
+                    textAnchor="end"
                   />
                   <YAxis 
                     stroke="hsl(var(--muted-foreground))" 
-                    fontSize={12}
+                    fontSize={11}
                     tickLine={false}
                     axisLine={false}
+                    width={50}
                     tickFormatter={(value) => 
                       chart.title.toLowerCase().includes('cost') ? 
                         formatCurrency(value) : 
@@ -156,7 +170,10 @@ export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
                       ]}
                     />} 
                   />
-                  <Legend />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    iconType="line"
+                  />
                   {Object.keys(chart.config).map((key, i) => (
                     <Line 
                       key={key} 
@@ -164,9 +181,9 @@ export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
                       dataKey={key} 
                       stroke={chartColors[i % chartColors.length]}
                       strokeWidth={3}
-                      dot={{ r: 4, fill: chartColors[i % chartColors.length] }}
+                      dot={{ r: 5, fill: chartColors[i % chartColors.length], strokeWidth: 2, stroke: '#fff' }}
                       name={chart.config[key]?.label || key}
-                      activeDot={{ r: 6, fill: chartColors[i % chartColors.length] }}
+                      activeDot={{ r: 7, fill: chartColors[i % chartColors.length], strokeWidth: 2, stroke: '#fff' }}
                     />
                   ))}
                 </LineChart>
@@ -177,22 +194,31 @@ export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
 
       case 'pie':
         return (
-          <div className="h-[300px] w-full">
+          <div className="h-[450px] w-full">
             <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+                <PieChart margin={{ top: 20, right: 20, bottom: 80, left: 20 }}>
                   <Pie
                     data={chart.data}
                     cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                    outerRadius={100}
+                    cy="45%"
+                    labelLine={true}
+                    label={({ name, percent }) => 
+                      percent > 0.05 ? `${name}: ${(percent * 100).toFixed(1)}%` : ''
+                    }
+                    outerRadius={110}
+                    innerRadius={40}
                     fill="#8884d8"
                     dataKey="value"
+                    paddingAngle={2}
                   >
                     {chart.data.map((entry, i) => (
-                      <Cell key={`cell-${i}`} fill={chartColors[i % chartColors.length]} />
+                      <Cell 
+                        key={`cell-${i}`} 
+                        fill={chartColors[i % chartColors.length]}
+                        stroke="#fff"
+                        strokeWidth={2}
+                      />
                     ))}
                   </Pie>
                   <ChartTooltip 
@@ -206,6 +232,12 @@ export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
                         name
                       ]}
                     />} 
+                  />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={60}
+                    wrapperStyle={{ paddingTop: '30px' }}
+                    iconType="circle"
                   />
                 </PieChart>
               </ResponsiveContainer>
