@@ -31,81 +31,148 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
 
   const getNextQuestions = (q: string): string[] => {
     const l = (q || "").toLowerCase();
-    if (l.includes("freight") || l.includes("invoice")) {
+    const allQuestions = additionalQuestions;
+    
+    if (l.includes("freight") || l.includes("cost")) {
       return [
-        "Which vendor had the highest anomaly count?",
-        "What was the total overcharge last month?",
+        "Which regions have the highest transportation costs?",
+        "What's the impact of fuel price volatility on our routes?"
       ];
     }
-    if (l.includes("delay")) {
+    if (l.includes("supplier") || l.includes("contract")) {
       return [
-        "Which routes were most impacted?",
-        "What were the root causes of delays?",
+        "Which suppliers provide the best quality metrics?",
+        "What's the average time to resolve supplier disputes?"
       ];
     }
-    if (l.includes("contract")) {
+    if (l.includes("inventory") || l.includes("holding")) {
       return [
-        "Which clauses are most risky?",
-        "Where are potential savings opportunities?",
+        "Which product categories have the most stockouts?",
+        "How effective are our demand forecasting models?"
       ];
     }
-    return [
-      "What are the top 3 risks right now?",
-      "What actions should we take next?",
-    ];
+    if (l.includes("port") || l.includes("delay")) {
+      return [
+        "Which trade lanes show the most delays?",
+        "How do seasonal patterns affect logistics performance?"
+      ];
+    }
+    
+    // Return random questions for other queries
+    const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 2);
   };
 
   const handleQuestionClick = (question: string) => {
-    // Simulate API response for demo
+    // Create realistic response based on question
+    const response = generateRealisticResponse(question);
     const newMessage: ChatMessage = {
       id: genId(),
       type: "answer",
       query: question,
-      content: {
-        what: "Sample response data generated for demonstration purposes.",
-        why: "This is a simulated answer to show how the system would respond to user queries.",
-        recommendation: "In a real implementation, this would connect to your backend APIs for actual data analysis.",
-        references: [
-          {
-            document: "sample_document.pdf",
-            excerpt: "Relevant text excerpt would appear here",
-            page: 1
-          }
-        ]
-      },
+      content: response,
       timestamp: new Date()
     };
     addMessage(newMessage);
   };
 
-  const handleNewQuery = (query: string) => {
-    // This would be called when user submits a new query
-    const newMessage: ChatMessage = {
-      id: genId(),
-      type: "answer",
-      query: query,
-      content: {
-        what: "Analysis of your query is being processed...",
-        why: "The system is analyzing relevant documents and data to provide insights.",
-        recommendation: "Please wait while we compile the most relevant information for your question.",
-        references: [
-          {
-            document: "processing.pdf",
-            excerpt: "Data analysis in progress...",
-            page: 1
-          }
-        ]
-      },
-      timestamp: new Date()
-    };
-    addMessage(newMessage);
+  const generateRealisticResponse = (question: string) => {
+    // Generate contextual responses based on question content
+    const l = question.toLowerCase();
     
-  };
+    if (l.includes("transportation") || l.includes("cost")) {
+      return {
+        answer: "Transportation costs are highest in the West Coast region, averaging $3.45 per mile compared to $2.10 nationally¹. The primary drivers include driver shortages (affecting 67% of routes), fuel price volatility (average $4.12/gallon), and port congestion adding 3.2 days per shipment². California routes show 89% higher costs due to regulatory compliance and limited capacity³.",
+        references: [
+          {
+            id: 1,
+            document: "regional-transport-costs-2024.pdf",
+            title: "Regional Transportation Cost Analysis",
+            excerpt: "West Coast average: $3.45/mile vs national average $2.10/mile",
+            page: 14
+          },
+          {
+            id: 2,
+            document: "fuel-impact-study.pdf", 
+            title: "Fuel Price Impact Study",
+            excerpt: "Driver shortage affecting 67% of routes, fuel averaging $4.12/gallon",
+            page: 8
+          },
+          {
+            id: 3,
+            document: "california-logistics-report.pdf",
+            title: "California Logistics Regulatory Impact",
+            excerpt: "California routes: 89% higher costs due to AB5 compliance and capacity constraints",
+            page: 23
+          }
+        ]
+      };
+    }
+    
+    if (l.includes("quality") || l.includes("supplier")) {
+      return {
+        answer: "Apex Electronics leads in quality metrics with 99.7% first-pass yield and zero critical defects in Q3¹. Nordic Components follows with 99.2% quality rating and industry-leading 24-hour issue resolution time². However, cost-focused suppliers like Value Parts Inc. show concerning trends with 94.1% quality scores and rising defect rates³. Quality correlates strongly with supplier investment in ISO certifications and continuous improvement programs⁴.",
+        references: [
+          {
+            id: 1,
+            document: "supplier-quality-rankings.pdf",
+            title: "Supplier Quality Performance Rankings Q3",
+            excerpt: "Apex Electronics: 99.7% first-pass yield, zero critical defects",
+            page: 7
+          },
+          {
+            id: 2,
+            document: "resolution-time-analysis.pdf",
+            title: "Issue Resolution Time Analysis", 
+            excerpt: "Nordic Components: 24-hour average resolution, 99.2% quality rating",
+            page: 12
+          },
+          {
+            id: 3,
+            document: "quality-trend-report.pdf",
+            title: "Quality Trend Analysis",
+            excerpt: "Value Parts Inc.: 94.1% quality score, defect rate increased 23% QoQ",
+            page: 18
+          },
+          {
+            id: 4,
+            document: "iso-certification-impact.pdf",
+            title: "ISO Certification Impact Study",
+            excerpt: "ISO-certified suppliers: 97.8% average quality vs 91.2% non-certified",
+            page: 5
+          }
+        ]
+      };
+    }
 
-  // Expose the function to parent component
-  useEffect(() => {
-    (window as any).submitQueryToChatArea = handleNewQuery;
-  }, []);
+    // Default response for other questions
+    return {
+      answer: "Based on current supply chain analysis, this area requires detailed investigation across multiple data sources¹. Key performance indicators show mixed results with some metrics exceeding targets while others need improvement². Industry benchmarking suggests opportunities for optimization through technology adoption and process refinement³.",
+      references: [
+        {
+          id: 1,
+          document: "comprehensive-analysis-2024.pdf",
+          title: "Comprehensive Supply Chain Analysis",
+          excerpt: "Multi-source data analysis revealing complex interdependencies",
+          page: 45
+        },
+        {
+          id: 2,
+          document: "kpi-dashboard-report.pdf",
+          title: "KPI Dashboard Report",
+          excerpt: "Mixed results: 67% metrics above target, 33% requiring attention",
+          page: 12
+        },
+        {
+          id: 3,
+          document: "industry-benchmarking.pdf",
+          title: "Industry Benchmarking Study",
+          excerpt: "Technology adoption correlation with 34% performance improvement",
+          page: 28
+        }
+      ]
+    };
+  };
 
   return (
     <div className="flex-1 overflow-y-auto">
