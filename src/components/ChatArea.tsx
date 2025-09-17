@@ -289,6 +289,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
                   what={message.content.what || ""}
                   why={message.content.why || ""}
                   recommendation={message.content.recommendation || ""}
+                  charts={message.content.charts || []}
                   references={message.content.references || []}
                   onDocumentSelect={onDocumentSelect}
                   onHighlightText={onHighlightText}

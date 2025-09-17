@@ -2,6 +2,7 @@ import { ExternalLink, FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SourcesSection } from "@/components/SourcesSection";
+import { BusinessCharts, ChartData } from "@/components/BusinessCharts";
 
 interface Reference {
   id?: number;
@@ -16,6 +17,7 @@ interface AnswerCardProps {
   what: string;
   why: string;
   recommendation: string;
+  charts?: ChartData[];
   references: Reference[];
   onDocumentSelect: (documentId: string) => void;
   onHighlightText: (text: string) => void;
@@ -43,6 +45,7 @@ export const AnswerCard = ({
   what, 
   why, 
   recommendation, 
+  charts,
   references,
   onDocumentSelect,
   onHighlightText 
@@ -88,6 +91,11 @@ export const AnswerCard = ({
             </h3>
             <p className="text-foreground leading-relaxed">{recommendation}</p>
           </div>
+
+          {/* Charts Section */}
+          {charts && charts.length > 0 && (
+            <BusinessCharts charts={charts} />
+          )}
 
           {/* Sources Section */}
           <SourcesSection 

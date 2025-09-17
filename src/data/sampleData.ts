@@ -1,5 +1,12 @@
 // Comprehensive supply chain dataset for Enterprise Insight Copilot
 
+export interface ChartData {
+  type: 'bar' | 'line' | 'pie' | 'trend';
+  title: string;
+  data: any[];
+  config: Record<string, any>;
+}
+
 export interface ChatMessage {
   id: string;
   type: 'answer' | 'anomaly';
@@ -9,6 +16,7 @@ export interface ChatMessage {
     why?: string;
     recommendation?: string;
     answer?: string; // For Perplexity-style single answer
+    charts?: ChartData[]; // New field for charts
     references?: Array<{
       id: number;
       document: string;
@@ -36,6 +44,36 @@ export const supplyChainQAs: ChatMessage[] = [
       what: "Your freight costs exceeded budget by $542,100 (23.4% over) this quarter, with $156,800 in confirmed overcharges identified across 89 shipments. TransLogistics Inc. accounts for 67% of these anomalies through systematic misclassification of 23 machinery shipments as Class 85 instead of Class 60, resulting in $47,300 in recoverable overcharges.",
       why: "Root cause analysis reveals three critical failures: (1) TransLogistics lacks automated freight classification verification, leading to consistent Class 85 mis-categorization worth $2,056 per shipment, (2) Duplicate fuel surcharges totaling $127,400 indicate inadequate invoice controls, and (3) Route B costs increased 340% due to driver shortage premiums ($1.20/mile) and routing inefficiencies ($3.44/mile).",
       recommendation: "Execute immediately: (1) Issue formal dispute for $156,800 in overcharges to TransLogistics with 30-day recovery timeline, (2) Implement automated freight class verification system within 60 days (projected $428,700 annual savings), (3) Diversify carriers - add 2 alternative providers for Route B to reduce dependency and negotiate 15% rate reduction through competition, (4) Establish monthly freight audit process with CFO oversight.",
+      charts: [
+        {
+          type: "bar",
+          title: "Freight Overcharges by Carrier",
+          data: [
+            { name: "TransLogistics", overcharges: 156800, budget: 180000 },
+            { name: "FastHaul", overcharges: 12300, budget: 85000 },
+            { name: "GlobalShip", overcharges: 8900, budget: 120000 },
+            { name: "RouteMax", overcharges: 5200, budget: 95000 }
+          ],
+          config: {
+            overcharges: { label: "Overcharges ($)", color: "hsl(0, 65%, 51%)" },
+            budget: { label: "Budget ($)", color: "hsl(217, 91%, 60%)" }
+          }
+        },
+        {
+          type: "trend",
+          title: "Monthly Freight Costs Trend",
+          data: [
+            { period: "Jan", actual: 285000, budget: 275000 },
+            { period: "Feb", actual: 292000, budget: 275000 },
+            { period: "Mar", actual: 318000, budget: 275000 },
+            { period: "Apr", actual: 342000, budget: 275000 }
+          ],
+          config: {
+            actual: { label: "Actual Cost ($)", color: "hsl(0, 65%, 51%)" },
+            budget: { label: "Budget ($)", color: "hsl(217, 91%, 60%)" }
+          }
+        }
+      ],
       references: [
         {
           id: 1,
@@ -70,6 +108,34 @@ export const supplyChainQAs: ChatMessage[] = [
       what: "Meridian Supply Co. presents immediate business risk with 23 contract violations this quarter ($2.3M annual contract value), including 8 missed delivery deadlines averaging 5.2 days each. This has caused $147,000 in direct costs: $89,400 in production delays, $34,500 in quality rework, and $23,100 in expedited shipping to recover schedules.",
       why: "Meridian lacks adequate production capacity and quality systems for current contract volume. Their 4.7% defect rate is 5x industry standard (0.8%), and 67% of delays stem from insufficient raw material inventory management. Global Parts Inc. exploits force majeure clauses 300% above industry average (12 times vs. 3-4 typical), indicating contract term abuse rather than legitimate disruptions.",
       recommendation: "Take decisive action within 30 days: (1) Issue formal breach notice to Meridian with 90-day performance improvement plan or contract termination, (2) Activate backup suppliers for 50% of Meridian volume immediately to reduce risk exposure, (3) Renegotiate Global Parts contract to limit force majeure to legitimate weather/labor events only, (4) Establish supplier scorecards with monthly CEO review for all contracts >$1M annually.",
+      charts: [
+        {
+          type: "bar",
+          title: "Contract Violations by Supplier",
+          data: [
+            { name: "Meridian Supply", violations: 23, contracts: 45 },
+            { name: "Global Parts", violations: 12, contracts: 38 },
+            { name: "Apex Mfg", violations: 8, contracts: 52 },
+            { name: "TechSource", violations: 3, contracts: 29 }
+          ],
+          config: {
+            violations: { label: "Violations", color: "hsl(0, 65%, 51%)" },
+            contracts: { label: "Total Contracts", color: "hsl(217, 91%, 60%)" }
+          }
+        },
+        {
+          type: "pie",
+          title: "Cost Impact Breakdown",
+          data: [
+            { name: "Production Delays", value: 89400 },
+            { name: "Quality Rework", value: 34500 },
+            { name: "Expedited Shipping", value: 23100 }
+          ],
+          config: {
+            value: { label: "Cost Impact ($)" }
+          }
+        }
+      ],
       references: [
         {
           id: 1,
