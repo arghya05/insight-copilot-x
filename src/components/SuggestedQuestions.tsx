@@ -9,7 +9,7 @@ export const SuggestedQuestions = ({ questions, onQuestionClick }: SuggestedQues
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-medium text-muted-foreground">
-        Related Questions
+        Next questions
       </h3>
       <div className="flex flex-wrap gap-2">
         {questions.map((question, index) => (

@@ -30,11 +30,12 @@ interface ChatAreaProps {
   showAnomaliesOnly: boolean;
   onDocumentSelect: (documentId: string) => void;
   onHighlightText: (text: string) => void;
-  onSubmitQuery?: (query: string) => void;
 }
 
-export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText, onSubmitQuery }: ChatAreaProps) => {
+export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText }: ChatAreaProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  let idCounter = 0;
+  const genId = () => `${Date.now()}-${++idCounter}`;
 
   // Sample data for demonstration
   useEffect(() => {
@@ -85,20 +86,36 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
     ? messages.filter(msg => msg.type === 'anomaly')
     : messages;
 
-  const suggestedQuestions = [
-    "Which vendor had the highest anomaly count?",
-    "How much did anomalies cost in total?",
-    "Which routes were most impacted?",
-    "Causes of anomalies in freight invoices?",
-    "How to reduce detention charges?",
-    "Which shipments had customs delays?",
-    "What's the average cost per mile variance?"
-  ];
+  const getNextQuestions = (q: string): string[] => {
+    const l = (q || "").toLowerCase();
+    if (l.includes("freight") || l.includes("invoice")) {
+      return [
+        "Which vendor had the highest anomaly count?",
+        "What was the total overcharge last month?",
+      ];
+    }
+    if (l.includes("delay")) {
+      return [
+        "Which routes were most impacted?",
+        "What were the root causes of delays?",
+      ];
+    }
+    if (l.includes("contract")) {
+      return [
+        "Which clauses are most risky?",
+        "Where are potential savings opportunities?",
+      ];
+    }
+    return [
+      "What are the top 3 risks right now?",
+      "What actions should we take next?",
+    ];
+  };
 
   const handleQuestionClick = (question: string) => {
     // Simulate API response for demo
     const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: genId(),
       type: "answer",
       query: question,
       content: {
@@ -121,7 +138,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
   const handleNewQuery = (query: string) => {
     // This would be called when user submits a new query
     const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: genId(),
       type: "answer",
       query: query,
       content: {
@@ -139,7 +156,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
       timestamp: new Date()
     };
     addMessage(newMessage);
-    onSubmitQuery?.(query);
+    
   };
 
   // Expose the function to parent component
@@ -177,7 +194,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
               
               {message === filteredMessages[filteredMessages.length - 1] && (
                 <SuggestedQuestions 
-                  questions={suggestedQuestions} 
+                  questions={getNextQuestions(message.query)} 
                   onQuestionClick={handleQuestionClick}
                 />
               )}

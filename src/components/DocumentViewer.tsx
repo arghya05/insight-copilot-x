@@ -100,7 +100,7 @@ export const DocumentViewer = ({ documentId, highlightedText }: DocumentViewerPr
       </div>
 
       {/* Document Content */}
-      <div className="flex-1 overflow-auto p-6 bg-white">
+      <div className="flex-1 overflow-auto p-6 bg-card">
         <Card className="max-w-none shadow-elevated">
           <div 
             className="p-8 font-mono text-sm leading-relaxed"

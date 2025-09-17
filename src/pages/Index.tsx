@@ -59,7 +59,6 @@ const Index = () => {
             showAnomaliesOnly={showAnomaliesOnly}
             onDocumentSelect={setSelectedDocument}
             onHighlightText={setHighlightedText}
-            onSubmitQuery={handleSubmitQuery}
           />
         </div>
 
