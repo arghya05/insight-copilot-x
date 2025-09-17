@@ -73,6 +73,9 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
   };
 
   const handleQuestionClick = async (question: string) => {
+    // Clear previous conversation for a fresh start
+    setMessages([]);
+    
     // Set loading state
     setIsLoading(true);
     setLoadingQuestion(question);
