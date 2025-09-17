@@ -33,7 +33,9 @@ export const supplyChainQAs: ChatMessage[] = [
     type: "answer",
     query: "What are the main freight cost anomalies this quarter?",
     content: {
-      answer: "The main freight cost anomalies this quarter include a 47% increase in Route B shipments, duplicate fuel surcharges totaling $127,400, and misclassified freight leading to $89,200 in overcharges. TransLogistics Inc. accounts for 67% of these anomalies, primarily due to incorrect Class 85 classifications instead of Class 60 for machinery shipments¹. The Chicago-Atlanta corridor shows the highest variance at 340% above baseline costs². Additionally, detention charges have spiked by 89% due to port congestion in Long Beach and Houston³.",
+      what: "Your freight costs exceeded budget by $542,100 (23.4% over) this quarter, with $156,800 in confirmed overcharges identified across 89 shipments. TransLogistics Inc. accounts for 67% of these anomalies through systematic misclassification of 23 machinery shipments as Class 85 instead of Class 60, resulting in $47,300 in recoverable overcharges.",
+      why: "Root cause analysis reveals three critical failures: (1) TransLogistics lacks automated freight classification verification, leading to consistent Class 85 mis-categorization worth $2,056 per shipment, (2) Duplicate fuel surcharges totaling $127,400 indicate inadequate invoice controls, and (3) Route B costs increased 340% due to driver shortage premiums ($1.20/mile) and routing inefficiencies ($3.44/mile).",
+      recommendation: "Execute immediately: (1) Issue formal dispute for $156,800 in overcharges to TransLogistics with 30-day recovery timeline, (2) Implement automated freight class verification system within 60 days (projected $428,700 annual savings), (3) Diversify carriers - add 2 alternative providers for Route B to reduce dependency and negotiate 15% rate reduction through competition, (4) Establish monthly freight audit process with CFO oversight.",
       references: [
         {
           id: 1,
@@ -65,7 +67,9 @@ export const supplyChainQAs: ChatMessage[] = [
     type: "answer", 
     query: "Which suppliers have the highest contract compliance risk?",
     content: {
-      answer: "Based on recent contract analysis, Meridian Supply Co. presents the highest compliance risk with 23 contract violations in Q3, including missed delivery deadlines and quality specification failures¹. Global Parts Inc. follows with 18 violations, primarily related to force majeure clause abuse and pricing discrepancies². Apex Manufacturing shows concerning trends with 15 late deliveries exceeding contractual SLA thresholds³. The automotive supply chain segment shows 67% higher non-compliance rates compared to electronics suppliers⁴.",
+      what: "Meridian Supply Co. presents immediate business risk with 23 contract violations this quarter ($2.3M annual contract value), including 8 missed delivery deadlines averaging 5.2 days each. This has caused $147,000 in direct costs: $89,400 in production delays, $34,500 in quality rework, and $23,100 in expedited shipping to recover schedules.",
+      why: "Meridian lacks adequate production capacity and quality systems for current contract volume. Their 4.7% defect rate is 5x industry standard (0.8%), and 67% of delays stem from insufficient raw material inventory management. Global Parts Inc. exploits force majeure clauses 300% above industry average (12 times vs. 3-4 typical), indicating contract term abuse rather than legitimate disruptions.",
+      recommendation: "Take decisive action within 30 days: (1) Issue formal breach notice to Meridian with 90-day performance improvement plan or contract termination, (2) Activate backup suppliers for 50% of Meridian volume immediately to reduce risk exposure, (3) Renegotiate Global Parts contract to limit force majeure to legitimate weather/labor events only, (4) Establish supplier scorecards with monthly CEO review for all contracts >$1M annually.",
       references: [
         {
           id: 1,
@@ -104,7 +108,9 @@ export const supplyChainQAs: ChatMessage[] = [
     type: "answer",
     query: "What's causing the inventory holding cost spike?",
     content: {
-      answer: "Inventory holding costs have increased by 156% due to three primary factors: excess safety stock accumulation worth $2.3M in slow-moving SKUs¹, warehouse capacity constraints forcing premium storage rates², and prolonged cash conversion cycles averaging 89 days versus industry standard of 45 days³. The electronics category shows the highest impact with $890K in obsolete inventory⁴. Poor demand forecasting accuracy (67% vs target 85%) has led to overordering in Q2 and Q3⁵.",
+      what: "Inventory holding costs increased 156% to $3.8M annually, driven primarily by $2.3M in slow-moving safety stock (turnover rate 0.8x vs. target 4.2x) and $890K in obsolete electronics inventory requiring immediate write-off. Cash conversion cycle deteriorated to 89 days versus industry benchmark of 45 days, tying up $5.2M in working capital.",
+      why: "Demand forecasting accuracy dropped to 67% (target: 85%) due to outdated forecasting models that don't account for market volatility. This caused overordering in Q2-Q3 worth $1.2M. Electronics category shows highest risk with 23% of stock facing obsolescence due to 6-month product lifecycles. Warehouse capacity constraints at 95% utilization force premium storage at $4.20/sq ft vs. standard $2.80/sq ft.",
+      recommendation: "Execute 90-day action plan: (1) Immediately write-off $890K obsolete electronics inventory and implement monthly obsolescence reviews, (2) Reduce safety stock by 40% for slow-moving SKUs to free $920K in cash within 60 days, (3) Upgrade demand forecasting system with AI/ML capabilities (ROI: 18 months, $2.1M annual savings), (4) Negotiate warehouse expansion or secure secondary location to eliminate premium storage costs ($168K annual savings).",
       references: [
         {
           id: 1,
@@ -150,7 +156,9 @@ export const supplyChainQAs: ChatMessage[] = [
     type: "answer",
     query: "How are port delays affecting our supply chain costs?",
     content: {
-      answer: "Port delays are costing the company $445K monthly through demurrage fees, detention charges, and expedited shipping¹. Long Beach port shows average delays of 6.2 days, while Houston averages 4.8 days². Container dwell time has increased 89% compared to pre-pandemic levels³. The automotive parts division is most affected, with 67% of inbound shipments experiencing delays⁴. Air freight costs have increased 234% as companies switch from ocean freight to meet delivery deadlines⁵.",
+      what: "Port congestion costs the company $445,000 monthly through direct fees: $267K demurrage, $134K detention charges, and $44K expedited shipping. 67% of automotive parts shipments experience delays averaging 5.4 days, causing 23 production line stoppages worth $1.05M in lost production (at $45,600 per stoppage). Air freight usage increased 234% as emergency alternative, adding $278,900 in premium transportation costs.",
+      why: "Long Beach port operates at 95% capacity with average delays of 6.2 days (vs. pre-pandemic 1.3 days), while Houston averages 4.8 days. Root causes: 33% staff shortage in longshoremen, 45% chassis shortage, and 22% documentation delays from customs clearance issues. Container dwell time increased 89% to 8.9 days, creating downstream bottlenecks across all inbound shipments.",
+      recommendation: "Implement multi-port strategy immediately: (1) Divert 40% of West Coast volume to Savannah (7.1/10 efficiency vs. Long Beach 4.2/10) within 60 days, (2) Negotiate detention/demurrage caps with carriers to limit monthly exposure to $200K, (3) Increase automotive parts safety stock by 30 days to prevent production stoppages ($160K carrying cost vs. $1.05M stoppage cost), (4) Establish dedicated customs broker relationship to reduce documentation delays by 50%.",
       references: [
         {
           id: 1,
@@ -196,7 +204,9 @@ export const supplyChainQAs: ChatMessage[] = [
     type: "answer",
     query: "What are the main risks in our contract terms with key suppliers?",
     content: {
-      answer: "Key contract risks include unlimited liability exposure in 34% of supplier agreements¹, inadequate force majeure clauses that don't cover cyber incidents², and pricing escalation terms without caps affecting $12.3M in annual spend³. IP indemnification gaps exist in 67% of technology supplier contracts⁴. Payment terms averaging 45 days are straining supplier relationships and increasing supply risk⁵. Currency hedging provisions are missing in 78% of international contracts⁶.",
+      what: "Critical legal and financial exposure identified: 34% of supplier contracts ($15.3M annual value) contain unlimited liability clauses exposing company to potential $45M in damages. Currency fluctuation risk of $8.9M exists across international contracts with no hedging provisions. Additionally, 67% of technology supplier contracts lack adequate IP indemnification, creating patent litigation exposure worth potential $12M+ in damages.",
+      why: "Contracts were negotiated during different market conditions without standardized risk assessment. Legal review identified three systemic failures: (1) Template contracts favor suppliers due to rushed negotiations during capacity shortages, (2) 78% of international contracts lack currency hedging because procurement team lacks forex expertise, (3) IP clauses are outdated and don't cover AI/software integration risks emerging in technology partnerships.",
+      recommendation: "Execute comprehensive contract overhaul within 120 days: (1) Renegotiate unlimited liability clauses to cap exposure at 12 months contract value (target: $4.5M max vs. current unlimited), (2) Implement currency hedging program for all contracts >$500K annually (estimated $890K annual savings on FX volatility), (3) Mandate updated IP indemnification clauses for all technology suppliers before renewal, (4) Establish legal review requirement for all contracts >$1M with standardized risk scoring matrix.",
       references: [
         {
           id: 1,

@@ -93,7 +93,9 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
     
     if (l.includes("transportation") || l.includes("cost")) {
       return {
-        answer: "Transportation costs are highest in the West Coast region, averaging $3.45 per mile compared to $2.10 nationally¹. The primary drivers include driver shortages (affecting 67% of routes), fuel price volatility (average $4.12/gallon), and port congestion adding 3.2 days per shipment². California routes show 89% higher costs due to regulatory compliance and limited capacity³.",
+        what: "West Coast transportation costs are 64% higher than national average at $3.45/mile vs $2.10/mile, with $890K in excessive costs this quarter. Driver shortage affects 67% of routes, creating premium wage pressure of $1.20/mile. California routes specifically show 89% cost premium due to AB5 compliance requirements.",
+        why: "Three systematic issues drive costs: (1) Driver shortage reached critical 33% vacancy rate forcing premium wages, (2) Fuel price volatility averaging $4.12/gallon vs. $3.20 target, and (3) California regulatory compliance (AB5) requiring employee classification changes, increasing costs 45% above neighboring states.",
+        recommendation: "Execute cost reduction strategy: (1) Diversify 40% of California volume to Nevada/Arizona hubs within 90 days (15% cost reduction), (2) Lock fuel pricing with 6-month hedging contracts, (3) Negotiate driver retention bonuses vs. premium wages (projected 20% savings), (4) Implement route optimization software for 12% efficiency gain.",
         references: [
           {
             id: 1,
@@ -122,7 +124,9 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
     
     if (l.includes("quality") || l.includes("supplier")) {
       return {
-        answer: "Apex Electronics leads in quality metrics with 99.7% first-pass yield and zero critical defects in Q3¹. Nordic Components follows with 99.2% quality rating and industry-leading 24-hour issue resolution time². However, cost-focused suppliers like Value Parts Inc. show concerning trends with 94.1% quality scores and rising defect rates³. Quality correlates strongly with supplier investment in ISO certifications and continuous improvement programs⁴.",
+        what: "Apex Electronics leads quality performance with 99.7% first-pass yield and zero critical defects, while Value Parts Inc. shows declining performance at 94.1% quality score with 23% increase in defect rates quarter-over-quarter. Quality variance costs the company $340K annually in rework and customer returns.",
+        why: "Quality performance correlates directly with supplier investment: ISO-certified suppliers achieve 97.8% average quality vs. 91.2% for non-certified suppliers. Value Parts reduced quality investments by 30% to maintain low pricing, while Apex invested $890K in process improvements and automation systems.",
+        recommendation: "Implement quality-based supplier management: (1) Establish minimum 95% quality requirement for all suppliers (exit Value Parts if not achieved within 90 days), (2) Offer quality incentive bonuses (+2% pricing for >98% performance), (3) Require ISO certification for all new suppliers >$500K annually, (4) Monthly quality scorecards with CEO review for suppliers >$1M.",
         references: [
           {
             id: 1,
@@ -158,7 +162,9 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
 
     // Default response for other questions
     return {
-      answer: "Based on current supply chain analysis, this area requires detailed investigation across multiple data sources¹. Key performance indicators show mixed results with some metrics exceeding targets while others need improvement². Industry benchmarking suggests opportunities for optimization through technology adoption and process refinement³.",
+      what: "Analysis reveals mixed performance across key supply chain metrics, with 67% of KPIs above target but 33% requiring immediate attention. Technology adoption shows direct correlation with 34% performance improvement in participating divisions.",
+      why: "Performance gaps stem from inconsistent process standardization across business units and lack of integrated technology platforms. Manual processes in 45% of operations create data accuracy issues and slow decision-making cycles.",
+      recommendation: "Launch 90-day process standardization initiative: (1) Implement unified ERP system across all divisions, (2) Establish weekly cross-functional performance reviews, (3) Deploy automation for manual processes affecting >$100K annually, (4) Create standardized KPI dashboard with real-time visibility for all managers.",
       references: [
         {
           id: 1,
