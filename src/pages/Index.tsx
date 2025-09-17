@@ -51,13 +51,20 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border bg-card">
         <div className="flex items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              Enterprise Insight Copilot
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              AI-powered supply chain and document analysis
-            </p>
+          <div className="flex items-center gap-4">
+            <img 
+              src="/src/assets/algonomy-logo.png" 
+              alt="Algonomy Logo" 
+              className="h-8 w-auto"
+            />
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">
+                Algonomy Supply Chain Control Tower
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                AI-powered supply chain and document analysis
+              </p>
+            </div>
           </div>
           <AnomalyToggle 
             enabled={showAnomaliesOnly}

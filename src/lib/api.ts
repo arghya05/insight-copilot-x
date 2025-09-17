@@ -1,4 +1,4 @@
-// API service layer for Enterprise Insight Copilot
+// API service layer for Algonomy Supply Chain Control Tower
 // Replace these placeholder endpoints with your actual backend APIs
 
 const API_BASE_URL = process.env.VITE_API_URL || 'https://your-api-endpoint.com/api';

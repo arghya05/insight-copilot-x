@@ -59,7 +59,7 @@ NEXT STEPS
 3. Monitor KPIs for improvement validation
 
 Generated on: ${new Date().toLocaleString()}
-Source: Enterprise Insight Copilot Analysis`;
+Source: Algonomy Supply Chain Control Tower Analysis`;
   };
 
   // Find the current document or generate dynamic content based on active message

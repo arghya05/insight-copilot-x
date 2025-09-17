@@ -1,4 +1,4 @@
-// Comprehensive supply chain dataset for Enterprise Insight Copilot
+// Comprehensive supply chain dataset for Algonomy Supply Chain Control Tower
 
 export interface ChartData {
   type: 'bar' | 'line' | 'pie' | 'trend';
