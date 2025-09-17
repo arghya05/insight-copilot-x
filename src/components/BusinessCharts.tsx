@@ -2,9 +2,7 @@ import { Card } from "@/components/ui/card";
 import { 
   ChartContainer, 
   ChartTooltip, 
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent 
+  ChartTooltipContent 
 } from "@/components/ui/chart";
 import { 
   BarChart, 
@@ -17,7 +15,8 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid,
-  ResponsiveContainer
+  ResponsiveContainer,
+  Legend
 } from "recharts";
 
 export interface ChartData {
@@ -36,111 +35,182 @@ const chartColors = [
   "hsl(0, 65%, 51%)", // destructive  
   "hsl(38, 92%, 50%)", // warning
   "hsl(142, 76%, 36%)", // success
-  "hsl(220, 13%, 91%)", // muted
+  "hsl(220, 13%, 60%)", // muted-foreground
   "hsl(217, 91%, 70%)", // primary variant
 ];
+
+// Format currency values
+const formatCurrency = (value: number) => {
+  if (value >= 1000000) {
+    return `$${(value / 1000000).toFixed(1)}M`;
+  } else if (value >= 1000) {
+    return `$${(value / 1000).toFixed(0)}K`;
+  }
+  return `$${value.toLocaleString()}`;
+};
+
+// Format percentage values
+const formatPercent = (value: number) => `${value.toFixed(1)}%`;
 
 export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
   if (!charts || charts.length === 0) return null;
 
   const renderChart = (chart: ChartData, index: number) => {
-    const chartConfig = {
-      ...chart.config,
-      ...Object.keys(chart.config).reduce((acc, key, i) => ({
-        ...acc,
-        [key]: {
-          ...chart.config[key],
-          color: chartColors[i % chartColors.length]
-        }
-      }), {})
-    };
+    // Create a simpler config for the ChartContainer
+    const chartConfig = Object.keys(chart.config).reduce((acc, key, i) => ({
+      ...acc,
+      [key]: {
+        label: chart.config[key]?.label || key,
+        color: chartColors[i % chartColors.length]
+      }
+    }), {});
 
     switch (chart.type) {
       case 'bar':
         return (
-          <ChartContainer config={chartConfig} className="h-[300px]">
-            <BarChart data={chart.data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              {Object.keys(chart.config).map((key, i) => (
-                <Bar 
-                  key={key} 
-                  dataKey={key} 
-                  fill={chartColors[i % chartColors.length]}
-                  radius={[4, 4, 0, 0]}
-                />
-              ))}
-            </BarChart>
-          </ChartContainer>
+          <div className="h-[300px] w-full">
+            <ChartContainer config={chartConfig}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chart.data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.3} />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => 
+                      chart.title.toLowerCase().includes('cost') || 
+                      chart.title.toLowerCase().includes('overcharge') ? 
+                        formatCurrency(value) : value.toLocaleString()
+                    }
+                  />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value: any, name: string) => [
+                        chart.title.toLowerCase().includes('cost') || 
+                        chart.title.toLowerCase().includes('overcharge') ? 
+                          formatCurrency(Number(value)) : value.toLocaleString(),
+                        name
+                      ]}
+                    />} 
+                  />
+                  <Legend />
+                  {Object.keys(chart.config).map((key, i) => (
+                    <Bar 
+                      key={key} 
+                      dataKey={key} 
+                      fill={chartColors[i % chartColors.length]}
+                      radius={[4, 4, 0, 0]}
+                      name={chart.config[key]?.label || key}
+                    />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
         );
 
       case 'line':
+      case 'trend':
+        const xAxisKey = chart.type === 'trend' ? 'period' : 'name';
         return (
-          <ChartContainer config={chartConfig} className="h-[300px]">
-            <LineChart data={chart.data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              {Object.keys(chart.config).map((key, i) => (
-                <Line 
-                  key={key} 
-                  type="monotone" 
-                  dataKey={key} 
-                  stroke={chartColors[i % chartColors.length]}
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                />
-              ))}
-            </LineChart>
-          </ChartContainer>
+          <div className="h-[300px] w-full">
+            <ChartContainer config={chartConfig}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chart.data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.3} />
+                  <XAxis 
+                    dataKey={xAxisKey} 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))" 
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => 
+                      chart.title.toLowerCase().includes('cost') ? 
+                        formatCurrency(value) : 
+                        chart.title.toLowerCase().includes('%') || chart.title.toLowerCase().includes('rate') ? 
+                          formatPercent(value) : value.toLocaleString()
+                    }
+                  />
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value: any, name: string) => [
+                        chart.title.toLowerCase().includes('cost') ? 
+                          formatCurrency(Number(value)) :
+                          chart.title.toLowerCase().includes('%') || chart.title.toLowerCase().includes('rate') ? 
+                            formatPercent(Number(value)) : value.toLocaleString(),
+                        name
+                      ]}
+                    />} 
+                  />
+                  <Legend />
+                  {Object.keys(chart.config).map((key, i) => (
+                    <Line 
+                      key={key} 
+                      type="monotone" 
+                      dataKey={key} 
+                      stroke={chartColors[i % chartColors.length]}
+                      strokeWidth={3}
+                      dot={{ r: 4, fill: chartColors[i % chartColors.length] }}
+                      name={chart.config[key]?.label || key}
+                      activeDot={{ r: 6, fill: chartColors[i % chartColors.length] }}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
         );
 
       case 'pie':
         return (
-          <ChartContainer config={chartConfig} className="h-[300px]">
-            <PieChart>
-              <Pie
-                data={chart.data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {chart.data.map((entry, i) => (
-                  <Cell key={`cell-${i}`} fill={chartColors[i % chartColors.length]} />
-                ))}
-              </Pie>
-              <ChartTooltip content={<ChartTooltipContent />} />
-            </PieChart>
-          </ChartContainer>
-        );
-
-      case 'trend':
-        return (
-          <ChartContainer config={chartConfig} className="h-[250px]">
-            <LineChart data={chart.data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="period" />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              {Object.keys(chart.config).map((key, i) => (
-                <Line 
-                  key={key} 
-                  type="monotone" 
-                  dataKey={key} 
-                  stroke={chartColors[i % chartColors.length]}
-                  strokeWidth={3}
-                  dot={{ r: 5 }}
-                />
-              ))}
-            </LineChart>
-          </ChartContainer>
+          <div className="h-[300px] w-full">
+            <ChartContainer config={chartConfig}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chart.data}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {chart.data.map((entry, i) => (
+                      <Cell key={`cell-${i}`} fill={chartColors[i % chartColors.length]} />
+                    ))}
+                  </Pie>
+                  <ChartTooltip 
+                    content={<ChartTooltipContent 
+                      formatter={(value: any, name: string) => [
+                        chart.title.toLowerCase().includes('cost') || 
+                        chart.title.toLowerCase().includes('impact') ? 
+                          formatCurrency(Number(value)) :
+                          chart.title.toLowerCase().includes('%') || chart.title.toLowerCase().includes('rate') ? 
+                            formatPercent(Number(value)) : value.toLocaleString(),
+                        name
+                      ]}
+                    />} 
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </div>
         );
 
       default:
@@ -149,14 +219,15 @@ export const BusinessCharts = ({ charts }: BusinessChartsProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      <h4 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wide">
-        Data Insights
+    <div className="space-y-6 mt-6">
+      <h4 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wide border-l-4 border-l-primary pl-3">
+        📊 Data Insights
       </h4>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {charts.map((chart, index) => (
-          <Card key={index} className="p-4">
-            <h5 className="text-sm font-medium text-muted-foreground mb-4">
+          <Card key={index} className="p-6 shadow-card">
+            <h5 className="text-base font-semibold text-foreground mb-6 flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-primary"></div>
               {chart.title}
             </h5>
             {renderChart(chart, index)}
