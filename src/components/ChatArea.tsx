@@ -14,6 +14,8 @@ interface ChatAreaProps {
 
 export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText, onActiveMessageChange }: ChatAreaProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingQuestion, setLoadingQuestion] = useState<string>("");
   let idCounter = 0;
   const genId = () => `${Date.now()}-${++idCounter}`;
 
@@ -70,7 +72,16 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
     return shuffled.slice(0, 2);
   };
 
-  const handleQuestionClick = (question: string) => {
+  const handleQuestionClick = async (question: string) => {
+    // Set loading state
+    setIsLoading(true);
+    setLoadingQuestion(question);
+    
+    // Simulate realistic processing time (1.5-3 seconds)
+    const processingTime = 1500 + Math.random() * 1500;
+    
+    await new Promise(resolve => setTimeout(resolve, processingTime));
+    
     // Find matching response from sample data or create realistic response
     const matchingQA = supplyChainQAs.find(qa => 
       qa.query.toLowerCase().includes(question.toLowerCase()) ||
@@ -86,6 +97,10 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
       content: response,
       timestamp: new Date()
     };
+    
+    // Clear loading state and add message
+    setIsLoading(false);
+    setLoadingQuestion("");
     addMessage(newMessage);
   };
 
@@ -423,36 +438,63 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
               </div>
             </div>
           </div>
-        ) : (
-          filteredMessages.map((message) => (
-            <div key={message.id} className="space-y-4">
-              {message.type === 'answer' ? (
-                <AnswerCard
-                  query={message.query}
-                  what={message.content.what || ""}
-                  why={message.content.why || ""}
-                  recommendation={message.content.recommendation || ""}
-                  charts={message.content.charts || []}
-                  references={message.content.references || []}
-                  onDocumentSelect={onDocumentSelect}
-                  onHighlightText={onHighlightText}
-                />
-              ) : (
-                <AnomalyCard
-                  anomalies={message.content.anomalies || []}
-                  timestamp={message.timestamp}
-                />
-              )}
-              
-              {message === filteredMessages[filteredMessages.length - 1] && (
-                <SuggestedQuestions 
-                  questions={getNextQuestions(message.query)} 
-                  onQuestionClick={handleQuestionClick}
-                />
-              )}
+        ) : null}
+
+        {/* Loading Animation */}
+        {isLoading && (
+          <div className="animate-fade-in">
+            <div className="bg-card border border-border rounded-lg p-6 shadow-card">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-8 h-8 border-3 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                  <div className="absolute inset-0 w-8 h-8 border-3 border-transparent border-t-primary/60 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }}></div>
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium text-foreground mb-1">Analyzing your question...</div>
+                  <div className="text-sm text-muted-foreground">{loadingQuestion}</div>
+                  <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="flex gap-1">
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></div>
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" style={{ animationDelay: '400ms' }}></div>
+                    </div>
+                    <span>Processing supply chain data</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))
+          </div>
         )}
+
+        {/* Messages */}
+        {filteredMessages.map((message) => (
+          <div key={message.id} className="space-y-4 animate-fade-in">
+            {message.type === 'answer' ? (
+              <AnswerCard
+                query={message.query}
+                what={message.content.what || ""}
+                why={message.content.why || ""}
+                recommendation={message.content.recommendation || ""}
+                charts={message.content.charts || []}
+                references={message.content.references || []}
+                onDocumentSelect={onDocumentSelect}
+                onHighlightText={onHighlightText}
+              />
+            ) : (
+              <AnomalyCard
+                anomalies={message.content.anomalies || []}
+                timestamp={message.timestamp}
+              />
+            )}
+            
+            {message === filteredMessages[filteredMessages.length - 1] && (
+              <SuggestedQuestions 
+                questions={getNextQuestions(message.query)} 
+                onQuestionClick={handleQuestionClick}
+              />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
