@@ -12,6 +12,7 @@ const Index = () => {
   const [showAnomaliesOnly, setShowAnomaliesOnly] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
   const [highlightedText, setHighlightedText] = useState<string>("");
+  const [activeMessage, setActiveMessage] = useState<ChatMessage | null>(null);
 
       const handleSubmitQuery = (submittedQuery: string) => {
         // Find matching response from sample data or create new one
@@ -74,6 +75,7 @@ const Index = () => {
             showAnomaliesOnly={showAnomaliesOnly}
             onDocumentSelect={setSelectedDocument}
             onHighlightText={setHighlightedText}
+            onActiveMessageChange={setActiveMessage}
           />
           
           <PDFGallery onDocumentSelect={setSelectedDocument} />
@@ -84,6 +86,7 @@ const Index = () => {
           <DocumentViewer 
             documentId={selectedDocument}
             highlightedText={highlightedText}
+            activeMessage={activeMessage}
           />
         </div>
       </div>

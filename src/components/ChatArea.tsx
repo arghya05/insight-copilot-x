@@ -9,9 +9,10 @@ interface ChatAreaProps {
   showAnomaliesOnly: boolean;
   onDocumentSelect: (documentId: string) => void;
   onHighlightText: (text: string) => void;
+  onActiveMessageChange: (message: ChatMessage | null) => void;
 }
 
-export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText }: ChatAreaProps) => {
+export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText, onActiveMessageChange }: ChatAreaProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   let idCounter = 0;
   const genId = () => `${Date.now()}-${++idCounter}`;
@@ -23,6 +24,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
 
   const addMessage = (message: ChatMessage) => {
     setMessages(prev => [...prev, message]);
+    onActiveMessageChange(message); // Set the new message as active
   };
 
   // Expose function to add messages from search bar

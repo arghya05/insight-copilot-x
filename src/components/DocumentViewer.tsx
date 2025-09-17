@@ -5,19 +5,77 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { pdfDocuments } from "@/data/sampleData";
+import type { ChatMessage } from "@/data/sampleData";
 
 interface DocumentViewerProps {
   documentId: string | null;
   highlightedText: string;
+  activeMessage: ChatMessage | null;
 }
 
-export const DocumentViewer = ({ documentId, highlightedText }: DocumentViewerProps) => {
+export const DocumentViewer = ({ documentId, highlightedText, activeMessage }: DocumentViewerProps) => {
   const [zoomLevel, setZoomLevel] = useState(100);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDocument, setSelectedDocument] = useState<string | null>(documentId);
 
-  // Find the current document
-  const currentDocument = pdfDocuments.find(doc => doc.id === (selectedDocument || documentId));
+  // Generate document content based on active message
+  const generateDocumentContent = (message: ChatMessage): string => {
+    if (!message.content.references || message.content.references.length === 0) {
+      return "Document content not available.";
+    }
+
+    const references = message.content.references;
+    const mainReference = references[0];
+    
+    return `${mainReference.title?.toUpperCase() || 'ANALYSIS REPORT'}
+${new Date().toLocaleDateString().toUpperCase()}
+
+EXECUTIVE SUMMARY
+${message.content.what || 'Analysis details not available.'}
+
+KEY FINDINGS
+
+[HIGHLIGHTED: ${mainReference.excerpt}]
+
+DETAILED ANALYSIS
+${message.content.why || 'Root cause analysis not available.'}
+
+${references.map(ref => `
+SUPPORTING DATA - PAGE ${ref.page || 1}:
+[HIGHLIGHTED: ${ref.excerpt}]
+`).join('')}
+
+STRATEGIC RECOMMENDATIONS
+${message.content.recommendation || 'Recommendations not available.'}
+
+FINANCIAL IMPACT SUMMARY
+- Immediate impact identified through data analysis
+- Recommended actions with quantified ROI projections
+- Timeline for implementation and cost recovery
+
+NEXT STEPS
+1. Review highlighted sections for critical data points
+2. Implement recommended actions per timeline
+3. Monitor KPIs for improvement validation
+
+Generated on: ${new Date().toLocaleString()}
+Source: Enterprise Insight Copilot Analysis`;
+  };
+
+  // Find the current document or generate dynamic content based on active message
+  let currentDocument = pdfDocuments.find(doc => doc.id === (selectedDocument || documentId));
+  
+  // If we have an active message but no specific document selected, generate dynamic document
+  if (!currentDocument && activeMessage && activeMessage.content.references && activeMessage.content.references.length > 0) {
+    const firstReference = activeMessage.content.references[0];
+    currentDocument = {
+      id: firstReference.document,
+      title: firstReference.title || firstReference.document.replace('.pdf', '').replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      pages: 25,
+      type: "Analysis Report",
+      content: generateDocumentContent(activeMessage)
+    };
+  }
 
   useEffect(() => {
     if (documentId) {
