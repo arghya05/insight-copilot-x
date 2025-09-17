@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ChatArea } from "@/components/ChatArea";
 import { DocumentViewer } from "@/components/DocumentViewer";
@@ -37,6 +37,14 @@ const Index = () => {
         
         setQuery("");
       };
+
+  // When a new answer becomes active, reset any manual document selection and highlight
+  useEffect(() => {
+    if (activeMessage) {
+      setSelectedDocument(null);
+      setHighlightedText("");
+    }
+  }, [activeMessage]);
 
   return (
     <div className="min-h-screen bg-background">

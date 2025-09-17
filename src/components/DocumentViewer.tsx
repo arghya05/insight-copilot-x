@@ -91,7 +91,7 @@ Source: Enterprise Insight Copilot Analysis`;
     }
   }, [highlightedText, currentDocument]);
 
-  if (!selectedDocument && !documentId) {
+  if (!currentDocument) {
     return (
       <div className="h-full flex flex-col">
         {/* Empty State Header */}
@@ -231,7 +231,10 @@ Source: Enterprise Insight Copilot Analysis`;
               style={{ fontSize: `${zoomLevel}%` }}
             >
               {currentDocument.content.split('\n').map((line, index) => {
-                const isHighlighted = highlightedText && line.toLowerCase().includes(highlightedText.toLowerCase());
+                const effectiveHighlightedText = (highlightedText && highlightedText.trim().length > 0)
+                  ? highlightedText
+                  : (activeMessage?.content.references?.[0]?.excerpt || "");
+                const isHighlighted = effectiveHighlightedText && line.toLowerCase().includes(effectiveHighlightedText.toLowerCase());
                 const isHighlightedSection = line.startsWith('[HIGHLIGHTED:') && line.endsWith(']');
                 
                 return (
