@@ -286,10 +286,9 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
               {message.type === 'answer' ? (
                 <AnswerCard
                   query={message.query}
-                  answer={message.content.answer || message.content.what || ""}
-                  what={message.content.what}
-                  why={message.content.why}
-                  recommendation={message.content.recommendation}
+                  what={message.content.what || ""}
+                  why={message.content.why || ""}
+                  recommendation={message.content.recommendation || ""}
                   references={message.content.references || []}
                   onDocumentSelect={onDocumentSelect}
                   onHighlightText={onHighlightText}
