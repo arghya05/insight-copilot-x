@@ -996,26 +996,6 @@ export const supplyChainQAs: ChatMessage[] = [
     },
     timestamp: new Date("2024-02-28T09:40:00")
   }
-      ],
-      references: [
-        {
-          id: 1,
-          document: "supplier-diversity-impact.pdf",
-          title: "Supplier Diversity Program Impact Analysis",
-          excerpt: "Diverse suppliers: 34% of spend, 23% faster delivery, 15% lower defects",
-          page: 12
-        },
-        {
-          id: 2,
-          document: "predictive-analytics-impact.pdf",
-          title: "Predictive Analytics Impact Study",
-          excerpt: "Demand forecast accuracy: 67% to 91%, prevented $2.34M in inventory costs",
-          page: 14
-        }
-      ]
-    },
-    timestamp: new Date("2024-02-28T09:40:00")
-  }
 ];
 
 export const getRandomQAs = (count: number = 5): ChatMessage[] => {
