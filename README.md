@@ -1,73 +1,113 @@
-# Welcome to your Lovable project
+# Enterprise Insight Copilot
 
-## Project info
+A modern, Perplexity-inspired AI assistant for supply chain and document analysis. Built with React, TypeScript, and Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/9e6527bc-53f5-4ae4-af6d-15370d76b673
+## Features
 
-## How can I edit this code?
+- **Intelligent Q&A**: Ask natural language questions about supply chain, freight, contracts, and finance
+- **Structured Responses**: Get answers in clear "What/Why/Recommendation" format
+- **Document Integration**: View PDFs with highlighted relevant sections
+- **Anomaly Detection**: Automatic detection and alerting for supply chain issues
+- **Interactive Interface**: Suggested questions and clickable insights
 
-There are several ways of editing your application.
+## Architecture
 
-**Use Lovable**
+### Frontend (React/TypeScript)
+- **Split-screen layout**: Chat interface + document viewer
+- **Modern design system**: Enterprise-grade styling with proper semantic tokens
+- **Real-time updates**: Dynamic content loading and highlighting
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9e6527bc-53f5-4ae4-af6d-15370d76b673) and start prompting.
+### Backend Integration (Placeholder APIs)
 
-Changes made via Lovable will be committed automatically to this repo.
+Replace the placeholder endpoints in `src/lib/api.ts` with your actual backend services:
 
-**Use your preferred IDE**
+#### Core Endpoints
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```typescript
+// Document Search
+GET /api/search?query=<string>
+Response: { documents: [{ id, title, type, relevanceScore }] }
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+// AI Analysis  
+POST /api/answer
+Body: { query: string, docIds: string[] }
+Response: { what, why, recommendation, references[] }
 
-Follow these steps:
+// PDF Viewer with Highlighting
+GET /api/pdf/{docId}?highlight=<string>
+Response: PDF blob with highlight coordinates
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+// Anomaly Detection
+GET /api/anomalies?supplyChainId=<string>
+Response: [{ type, severity, description, impact }]
 ```
 
-**Edit a file directly in GitHub**
+#### Supply Chain Specific Endpoints
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```typescript
+// Freight Analysis
+GET /api/freight/{routeId}/analysis
 
-**Use GitHub Codespaces**
+// Contract Analysis  
+GET /api/contracts/{contractId}/analysis
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+// Finance Anomalies
+GET /api/finance/anomalies?timeframe=<string>
+```
 
-## What technologies are used for this project?
+## Quick Start
 
-This project is built with:
+1. **Clone and install**:
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2. **Configure your API endpoints**:
+   - Update `src/lib/api.ts` with your backend URLs
+   - Set environment variables for API authentication
 
-## How can I deploy this project?
+3. **Customize for your domain**:
+   - Update sample data in components
+   - Modify question suggestions
+   - Add your document types and classifications
 
-Simply open [Lovable](https://lovable.dev/projects/9e6527bc-53f5-4ae4-af6d-15370d76b673) and click on Share -> Publish.
+## Sample Interaction Flow
 
-## Can I connect a custom domain to my Lovable project?
+1. **User asks**: "What anomalies are in freight invoices last month?"
 
-Yes, you can!
+2. **System responds** with structured analysis:
+   - **What Happened**: Specific anomalies found
+   - **Why It Happened**: Root cause analysis  
+   - **Recommendation**: Actionable next steps
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+3. **Document viewer** opens with highlighted evidence
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+4. **Follow-up questions** appear as clickable chips
+
+## Customization
+
+### Design System
+All colors, fonts, and spacing are defined in `src/index.css` and `tailwind.config.ts`. Modify these files to match your brand.
+
+### Sample Data
+Update the sample messages and questions in `src/components/ChatArea.tsx` to reflect your actual use cases.
+
+### Document Types
+Modify `src/components/DocumentViewer.tsx` to handle your specific document formats and metadata.
+
+## Deployment
+
+Built with Vite for fast development and optimized production builds:
+
+```bash
+npm run build
+```
+
+## Technology Stack
+
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **Radix UI** for accessible components  
+- **Lucide React** for icons
+- **React Router** for navigation
