@@ -95,6 +95,36 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
         what: "West Coast transportation costs exceeded budget by $890K this quarter, averaging $3.45/mile vs national average of $2.10/mile (64% premium). Driver shortage affects 67% of routes, with California operations showing 89% cost premium due to AB5 regulatory compliance requirements.",
         why: "Three systematic cost drivers identified: (1) Critical driver shortage at 33% vacancy rate forcing premium wages of $1.20/mile above standard rates, (2) Fuel price volatility averaging $4.12/gallon vs $3.20 target, and (3) California AB5 compliance requiring employee reclassification, increasing operational costs 45% above neighboring states.",
         recommendation: "Execute immediate cost reduction plan: (1) Diversify 40% of California volume to Nevada/Arizona distribution hubs within 90 days (projected 15% cost reduction), (2) Implement 6-month fuel hedging contracts to stabilize pricing, (3) Negotiate driver retention bonuses instead of premium wages (20% savings potential), (4) Deploy route optimization software for 12% efficiency improvement.",
+        charts: [
+          {
+            type: "bar" as const,
+            title: "Transportation Costs by Region",
+            data: [
+              { name: "West Coast", cost: 3.45, budget: 2.10 },
+              { name: "East Coast", cost: 2.30, budget: 2.10 },
+              { name: "Midwest", cost: 1.95, budget: 2.10 },
+              { name: "Southwest", cost: 2.65, budget: 2.10 }
+            ],
+            config: {
+              cost: { label: "Actual Cost ($/mile)", color: "hsl(0, 65%, 51%)" },
+              budget: { label: "Budget ($/mile)", color: "hsl(217, 91%, 60%)" }
+            }
+          },
+          {
+            type: "line" as const,
+            title: "Fuel Price Trend",
+            data: [
+              { name: "Jan", fuel: 3.20, target: 3.20 },
+              { name: "Feb", fuel: 3.45, target: 3.20 },
+              { name: "Mar", fuel: 4.12, target: 3.20 },
+              { name: "Apr", fuel: 4.25, target: 3.20 }
+            ],
+            config: {
+              fuel: { label: "Actual Fuel ($/gal)", color: "hsl(38, 92%, 50%)" },
+              target: { label: "Target ($/gal)", color: "hsl(142, 76%, 36%)" }
+            }
+          }
+        ],
         references: [
           {
             id: 1,
@@ -126,6 +156,34 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
         what: "Supplier quality performance shows critical variance: Apex Electronics achieves 99.7% first-pass yield with zero critical defects, while Value Parts Inc. declined to 94.1% quality score with 23% increase in defect rates. Quality issues cost $340K annually in rework, returns, and production delays across 12 supplier relationships.",
         why: "Quality performance directly correlates with supplier investment levels: ISO-certified suppliers achieve 97.8% average quality vs 91.2% for non-certified suppliers. Value Parts reduced quality investments by 30% to maintain competitive pricing, while top performers like Apex invested $890K in process improvements and automation systems.",
         recommendation: "Implement performance-based supplier strategy: (1) Establish minimum 95% quality threshold for all suppliers - exit Value Parts within 90 days if not achieved, (2) Create quality incentive structure (+2% pricing premium for suppliers achieving >98% performance), (3) Mandate ISO certification for all new suppliers with contracts >$500K annually, (4) Institute monthly supplier scorecards with CEO review for relationships >$1M.",
+        charts: [
+          {
+            type: "bar" as const,
+            title: "Supplier Quality Performance",
+            data: [
+              { name: "Apex Electronics", quality: 99.7, target: 95.0 },
+              { name: "Nordic Components", quality: 98.2, target: 95.0 },
+              { name: "TechSource Pro", quality: 96.8, target: 95.0 },
+              { name: "Value Parts Inc", quality: 94.1, target: 95.0 }
+            ],
+            config: {
+              quality: { label: "Quality Score (%)", color: "hsl(142, 76%, 36%)" },
+              target: { label: "Target (%)", color: "hsl(217, 91%, 60%)" }
+            }
+          },
+          {
+            type: "pie" as const,
+            title: "Quality Cost Breakdown",
+            data: [
+              { name: "Rework", value: 156000 },
+              { name: "Returns", value: 89000 },
+              { name: "Production Delays", value: 95000 }
+            ],
+            config: {
+              value: { label: "Cost Impact ($)" }
+            }
+          }
+        ],
         references: [
           {
             id: 1,
@@ -157,6 +215,34 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
         what: "Inventory costs increased 178% this quarter to $4.2M annually, with $2.8M tied up in slow-moving inventory (turnover rate 0.6x vs target 4.5x). Electronics division shows $1.1M in obsolete stock requiring immediate write-off, while demand forecasting accuracy dropped to 62% causing $1.4M in overstock across 156 SKUs.",
         why: "Inventory inefficiency stems from three core issues: (1) Outdated demand forecasting models that ignore market volatility patterns, causing systematic overordering, (2) Safety stock policies based on pre-pandemic data, creating 89% excess buffer inventory, and (3) Electronics product lifecycle management failure - 28% of stock faces obsolescence due to 4-month refresh cycles vs 6-month planning horizon.",
         recommendation: "Execute inventory optimization program: (1) Write-off $1.1M obsolete electronics inventory immediately and implement monthly obsolescence reviews, (2) Reduce safety stock by 45% for slow-moving SKUs to free $1.26M in working capital, (3) Deploy AI-powered demand forecasting system within 120 days (ROI: 14 months, $2.4M annual benefit), (4) Establish dynamic safety stock policies based on real-time demand signals.",
+        charts: [
+          {
+            type: "pie" as const,
+            title: "Inventory Cost Breakdown",
+            data: [
+              { name: "Slow-Moving", value: 2800000 },
+              { name: "Obsolete Electronics", value: 1100000 },
+              { name: "Overstock SKUs", value: 1400000 }
+            ],
+            config: {
+              value: { label: "Value ($)" }
+            }
+          },
+          {
+            type: "bar" as const,
+            title: "Inventory Turnover by Category",
+            data: [
+              { name: "Electronics", actual: 0.6, target: 4.5 },
+              { name: "Automotive", actual: 2.1, target: 4.5 },
+              { name: "Industrial", actual: 3.8, target: 4.5 },
+              { name: "Components", actual: 1.9, target: 4.5 }
+            ],
+            config: {
+              actual: { label: "Actual Turnover", color: "hsl(0, 65%, 51%)" },
+              target: { label: "Target Turnover", color: "hsl(142, 76%, 36%)" }
+            }
+          }
+        ],
         references: [
           {
             id: 1,
@@ -188,6 +274,34 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
         what: "Trade lane delays cost $520K monthly through extended transit times, with Asia-US routes averaging 18.3 days vs standard 12 days (53% increase). Europe-US lanes show 34% delay rates, while Latin America routes experience 67% on-time performance vs 95% target. Most critical impact on automotive parts causing 15 production line stoppages worth $675K in lost output.",
         why: "Delay analysis reveals systematic bottlenecks: (1) Port congestion at entry points causes 67% of delays, with Long Beach and Houston operating at 97% capacity, (2) Customs documentation errors increased 45% due to new regulatory requirements, and (3) Inland transportation constraints from chassis shortages (38% below requirement) and rail capacity limits during peak seasons.",
         recommendation: "Implement multi-modal diversification strategy: (1) Shift 30% of Asia volume from West Coast to East Coast ports within 60 days (Savannah/Norfolk showing 15% better performance), (2) Establish dedicated customs broker relationships to reduce documentation delays by 60%, (3) Negotiate guaranteed chassis allocation with 3 equipment providers, (4) Create 45-day buffer inventory for critical automotive components to prevent production stoppages.",
+        charts: [
+          {
+            type: "bar" as const,
+            title: "Transit Times by Trade Lane",
+            data: [
+              { name: "Asia-US", actual: 18.3, standard: 12.0 },
+              { name: "Europe-US", actual: 15.8, standard: 14.0 },
+              { name: "Latin America", actual: 8.2, standard: 7.0 },
+              { name: "Domestic", actual: 4.5, standard: 3.5 }
+            ],
+            config: {
+              actual: { label: "Actual Days", color: "hsl(0, 65%, 51%)" },
+              standard: { label: "Standard Days", color: "hsl(142, 76%, 36%)" }
+            }
+          },
+          {
+            type: "pie" as const,
+            title: "Delay Cost Impact",
+            data: [
+              { name: "Production Stoppages", value: 675000 },
+              { name: "Extended Transit", value: 312000 },
+              { name: "Port Congestion", value: 208000 }
+            ],
+            config: {
+              value: { label: "Cost Impact ($)" }
+            }
+          }
+        ],
         references: [
           {
             id: 1,
@@ -219,6 +333,33 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
       what: "Supply chain performance analysis reveals mixed results across operational metrics, with 64% of KPIs meeting targets but 36% showing concerning trends. Technology gap analysis indicates $890K in efficiency losses annually from manual processes affecting procurement, inventory management, and logistics coordination across 8 business units.",
       why: "Performance inconsistencies stem from three organizational issues: (1) Lack of standardized processes across business units, creating 23% efficiency variance between top and bottom performers, (2) Legacy technology systems requiring manual intervention in 52% of transactions, and (3) Insufficient cross-functional visibility causing delayed decision-making and reactive rather than proactive management approaches.",
       recommendation: "Launch enterprise-wide standardization initiative: (1) Implement unified ERP platform across all divisions within 180 days (projected $1.2M annual efficiency gain), (2) Establish weekly cross-functional performance reviews with standardized KPI reporting, (3) Deploy process automation for all manual workflows affecting >$50K annually, (4) Create real-time executive dashboard with predictive analytics for proactive decision-making.",
+      charts: [
+        {
+          type: "pie" as const,
+          title: "KPI Performance Status",
+          data: [
+            { name: "Meeting Targets", value: 64 },
+            { name: "Below Targets", value: 36 }
+          ],
+          config: {
+            value: { label: "Percentage (%)" }
+          }
+        },
+        {
+          type: "bar" as const,
+          title: "Efficiency by Business Unit",
+          data: [
+            { name: "Procurement", efficiency: 85, target: 90 },
+            { name: "Manufacturing", efficiency: 92, target: 90 },
+            { name: "Logistics", efficiency: 78, target: 90 },
+            { name: "Quality", efficiency: 88, target: 90 }
+          ],
+          config: {
+            efficiency: { label: "Current Efficiency (%)", color: "hsl(217, 91%, 60%)" },
+            target: { label: "Target (%)", color: "hsl(142, 76%, 36%)" }
+          }
+        }
+      ],
       references: [
         {
           id: 1,
