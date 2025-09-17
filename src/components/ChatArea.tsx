@@ -2,29 +2,8 @@ import { useState, useEffect } from "react";
 import { AnswerCard } from "@/components/AnswerCard";
 import { SuggestedQuestions } from "@/components/SuggestedQuestions";
 import { AnomalyCard } from "@/components/AnomalyCard";
-
-interface ChatMessage {
-  id: string;
-  type: 'answer' | 'anomaly';
-  query: string;
-  content: {
-    what?: string;
-    why?: string;
-    recommendation?: string;
-    references?: Array<{
-      document: string;
-      excerpt: string;
-      page?: number;
-    }>;
-    anomalies?: Array<{
-      type: string;
-      severity: 'low' | 'medium' | 'high';
-      description: string;
-      impact: string;
-    }>;
-  };
-  timestamp: Date;
-}
+import { supplyChainQAs, additionalQuestions } from "@/data/sampleData";
+import type { ChatMessage } from "@/data/sampleData";
 
 interface ChatAreaProps {
   showAnomaliesOnly: boolean;
@@ -37,45 +16,9 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
   let idCounter = 0;
   const genId = () => `${Date.now()}-${++idCounter}`;
 
-  // Sample data for demonstration
+  // Load comprehensive supply chain data
   useEffect(() => {
-    const sampleMessages: ChatMessage[] = [
-      {
-        id: "1",
-        type: "answer",
-        query: "What anomalies are in freight invoices last month?",
-        content: {
-          what: "Multiple invoices showed overcharges on route B shipments totaling $47,300 across 23 shipments.",
-          why: "Analysis revealed misclassified freight class (Class 85 instead of Class 60) and duplicate fuel surcharges applied by vendor TransLogistics Inc.",
-          recommendation: "Audit vendor invoices immediately, implement automated freight classification checks, and renegotiate fuel surcharge terms to prevent double-charging.",
-          references: [
-            {
-              document: "freight_invoice_2024_03.pdf",
-              excerpt: "Freight class 85 applied to machinery shipment, fuel surcharge $127.50 + additional fuel adjustment $127.50",
-              page: 3
-            }
-          ]
-        },
-        timestamp: new Date()
-      },
-      {
-        id: "2", 
-        type: "anomaly",
-        query: "Route B shipment delays",
-        content: {
-          anomalies: [
-            {
-              type: "Delay Spike",
-              severity: "high",
-              description: "Average delivery time increased 340% on Route B (Chicago-Atlanta)",
-              impact: "Customer complaints up 67%, $23K in penalty fees"
-            }
-          ]
-        },
-        timestamp: new Date()
-      }
-    ];
-    setMessages(sampleMessages);
+    setMessages(supplyChainQAs.slice(0, 5));
   }, []);
 
   const addMessage = (message: ChatMessage) => {
@@ -178,9 +121,10 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText 
               {message.type === 'answer' ? (
                 <AnswerCard
                   query={message.query}
-                  what={message.content.what || ""}
-                  why={message.content.why || ""}
-                  recommendation={message.content.recommendation || ""}
+                  answer={message.content.answer || message.content.what || ""}
+                  what={message.content.what}
+                  why={message.content.why}
+                  recommendation={message.content.recommendation}
                   references={message.content.references || []}
                   onDocumentSelect={onDocumentSelect}
                   onHighlightText={onHighlightText}

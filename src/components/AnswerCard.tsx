@@ -1,25 +1,47 @@
 import { ExternalLink, FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SourcesSection } from "@/components/SourcesSection";
 
 interface Reference {
+  id?: number;
   document: string;
+  title?: string;
   excerpt: string;
   page?: number;
 }
 
 interface AnswerCardProps {
   query: string;
-  what: string;
-  why: string;
-  recommendation: string;
+  answer?: string; // Perplexity-style single answer
+  what?: string;
+  why?: string;
+  recommendation?: string;
   references: Reference[];
   onDocumentSelect: (documentId: string) => void;
   onHighlightText: (text: string) => void;
 }
 
+// Helper function to add citation numbers to text
+const addCitations = (text: string, references: Reference[]) => {
+  if (!text || !references.length) return text;
+  
+  let citedText = text;
+  references.forEach((ref) => {
+    if (ref.id && citedText.includes(ref.excerpt.substring(0, 30))) {
+      // Add superscript citation number
+      citedText = citedText.replace(
+        new RegExp(ref.excerpt.substring(0, 30).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+        `${ref.excerpt.substring(0, 30)}<sup>${ref.id}</sup>`
+      );
+    }
+  });
+  return citedText;
+};
+
 export const AnswerCard = ({ 
   query, 
+  answer,
   what, 
   why, 
   recommendation, 
@@ -27,9 +49,31 @@ export const AnswerCard = ({
   onDocumentSelect,
   onHighlightText 
 }: AnswerCardProps) => {
-  const handleReferenceClick = (ref: Reference) => {
-    onDocumentSelect(ref.document);
-    onHighlightText(ref.excerpt);
+  
+  // Process references to ensure they have IDs
+  const processedReferences = references.map((ref, index) => ({
+    ...ref,
+    id: ref.id || index + 1,
+    title: ref.title || ref.document.replace('.pdf', '').replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  }));
+
+  // Function to render text with inline citations
+  const renderTextWithCitations = (text: string) => {
+    if (!text) return text;
+    
+    // Replace citation markers (¹²³) with styled superscript numbers
+    let processedText = text;
+    const citationPattern = /[¹²³⁴⁵⁶⁷⁸⁹]/g;
+    const citationMap: {[key: string]: string} = {
+      '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'
+    };
+    
+    processedText = processedText.replace(citationPattern, (match) => {
+      const num = citationMap[match];
+      return `<sup class="inline-flex items-center justify-center w-4 h-4 text-xs bg-primary/10 text-primary rounded-full ml-0.5 cursor-pointer hover:bg-primary/20 transition-colors">${num}</sup>`;
+    });
+    
+    return processedText;
   };
 
   return (
@@ -39,70 +83,53 @@ export const AnswerCard = ({
         {query}
       </div>
 
-      {/* Answer Sections */}
-      <Card className="shadow-card border-l-4 border-l-primary">
-        <div className="p-6 space-y-6">
-          {/* What Happened */}
-          <div>
-            <h3 className="text-sm font-semibold text-foreground mb-2 uppercase tracking-wide">
-              What Happened
-            </h3>
-            <p className="text-foreground leading-relaxed">{what}</p>
-          </div>
+      {/* Main Answer */}
+      <Card className="shadow-card">
+        <div className="p-6">
+          {answer ? (
+            // Perplexity-style single answer
+            <div 
+              className="text-foreground leading-relaxed text-base"
+              dangerouslySetInnerHTML={{ __html: renderTextWithCitations(answer) }}
+            />
+          ) : (
+            // Traditional What/Why/Recommendation format
+            <div className="space-y-6">
+              {what && (
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground mb-2 uppercase tracking-wide">
+                    What Happened
+                  </h3>
+                  <p className="text-foreground leading-relaxed">{what}</p>
+                </div>
+              )}
 
-          {/* Why It Happened */}
-          <div>
-            <h3 className="text-sm font-semibold text-foreground mb-2 uppercase tracking-wide">
-              Why It Happened
-            </h3>
-            <p className="text-foreground leading-relaxed">{why}</p>
-          </div>
+              {why && (
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground mb-2 uppercase tracking-wide">
+                    Why It Happened
+                  </h3>
+                  <p className="text-foreground leading-relaxed">{why}</p>
+                </div>
+              )}
 
-          {/* Recommendation */}
-          <div>
-            <h3 className="text-sm font-semibold text-foreground mb-2 uppercase tracking-wide">
-              Recommendation
-            </h3>
-            <p className="text-foreground leading-relaxed">{recommendation}</p>
-          </div>
-
-          {/* References */}
-          {references.length > 0 && (
-            <div className="border-t border-border pt-4">
-              <h3 className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wide">
-                Sources
-              </h3>
-              <div className="space-y-2">
-                {references.map((ref, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    size="sm"
-                    className="h-auto p-3 justify-start text-left hover:bg-muted/50 transition-colors"
-                    onClick={() => handleReferenceClick(ref)}
-                  >
-                    <div className="flex items-start space-x-3 w-full">
-                      <FileText className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm text-foreground">
-                          {ref.document}
-                          {ref.page && (
-                            <span className="text-muted-foreground ml-1">
-                              (Page {ref.page})
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          {ref.excerpt}
-                        </div>
-                      </div>
-                      <ExternalLink className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                    </div>
-                  </Button>
-                ))}
-              </div>
+              {recommendation && (
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground mb-2 uppercase tracking-wide">
+                    Recommendation
+                  </h3>
+                  <p className="text-foreground leading-relaxed">{recommendation}</p>
+                </div>
+              )}
             </div>
           )}
+
+          {/* Sources Section */}
+          <SourcesSection 
+            sources={processedReferences}
+            onDocumentSelect={onDocumentSelect}
+            onHighlightText={onHighlightText}
+          />
         </div>
       </Card>
     </div>
