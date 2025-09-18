@@ -131,8 +131,8 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
         }
       }
       
-      // Simulate realistic processing time - minimum 2 seconds for better UX
-      const processingTime = 2000 + Math.random() * 2000;
+      // Realistic analysis time - minimum 2.5 seconds for thorough analysis
+      const processingTime = 2500 + Math.random() * 2500;
       await new Promise(resolve => setTimeout(resolve, processingTime));
       
       const newMessage: ChatMessage = {
@@ -179,8 +179,8 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
     } catch (error) {
       console.error('Error handling question:', error);
       
-      // Even on error, ensure minimum processing time
-      const processingTime = 2000 + Math.random() * 1000;
+      // Even on error, ensure minimum analysis time
+      const processingTime = 2500 + Math.random() * 1500;
       await new Promise(resolve => setTimeout(resolve, processingTime));
       
       // Fallback to original behavior
