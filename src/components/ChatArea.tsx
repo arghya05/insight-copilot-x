@@ -77,6 +77,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
   const handleQuestionClick = async (question: string) => {
     // Clear previous conversation for a fresh start
     setMessages([]);
+    setNextQuestions([]); // Clear previous next questions
     
     // Set loading state
     setIsLoading(true);
@@ -125,30 +126,35 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
         timestamp: new Date()
       };
       
-      // Save conversation to database
-      try {
-        await saveConversation(question, JSON.stringify(response), followUpQuestions);
-      } catch (error) {
-        console.error('Error saving conversation:', error);
-      }
-      
-      // Clear loading state and add message
+      // Clear loading state and add message first
       setIsLoading(false);
       setLoadingQuestion("");
       addMessage(newMessage);
       
-      // Load next questions asynchronously 
+      // Set next questions immediately after adding the message
       if (followUpQuestions.length > 0) {
         setNextQuestions(followUpQuestions);
       } else {
+        // If no specific follow-ups, get some random questions
         try {
-          const asyncFollowUps = await getNextQuestions(question);
-          setNextQuestions(asyncFollowUps);
+          const randomQuestions = await getRandomQuestions(4);
+          const questionTexts = randomQuestions.map(q => q.question_text).slice(0, 3);
+          setNextQuestions(questionTexts);
         } catch (error) {
-          console.error('Error loading follow-up questions:', error);
-          setNextQuestions([]);
+          console.error('Error loading random questions:', error);
+          // Fallback to hardcoded questions
+          setNextQuestions([
+            "Which regions have the highest transportation costs?",
+            "What's the impact of fuel price volatility?",
+            "How effective are our demand forecasting models?"
+          ]);
         }
       }
+      
+      // Save conversation to database (async, don't wait)
+      saveConversation(question, JSON.stringify(response), followUpQuestions).catch(error => {
+        console.error('Error saving conversation:', error);
+      });
       
     } catch (error) {
       console.error('Error handling question:', error);
@@ -171,7 +177,13 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
       setIsLoading(false);
       setLoadingQuestion("");
       addMessage(newMessage);
-      setNextQuestions([]); // Clear next questions on error
+      
+      // Set fallback next questions
+      setNextQuestions([
+        "Which regions have the highest transportation costs?",
+        "What's the impact of fuel price volatility?",
+        "How effective are our demand forecasting models?"
+      ]);
     }
   };
 
@@ -557,16 +569,19 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
                 timestamp={message.timestamp}
               />
             )}
-            
-            {message === filteredMessages[filteredMessages.length - 1] && (
-              <SuggestedQuestions 
-                questions={nextQuestions} 
-                onQuestionClick={handleQuestionClick}
-                isLoading={isLoading}
-              />
-            )}
           </div>
         ))}
+        
+        {/* Show suggested questions after the last message */}
+        {!isLoading && filteredMessages.length > 0 && nextQuestions.length > 0 && (
+          <div className="mt-6">
+            <SuggestedQuestions 
+              questions={nextQuestions} 
+              onQuestionClick={handleQuestionClick}
+              isLoading={false}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
