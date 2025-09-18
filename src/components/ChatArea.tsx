@@ -84,34 +84,50 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
     setLoadingQuestion(question);
     
     try {
-      // First try to find exact match in database
-      const dbMatch = await findBestMatch(question);
+      // First priority: Check if we have rich sample data with charts and references
+      const matchingQA = supplyChainQAs.find(qa => 
+        qa.query.toLowerCase().includes(question.toLowerCase()) ||
+        question.toLowerCase().includes(qa.query.toLowerCase())
+      );
       
       let response;
       let followUpQuestions: string[] = [];
       
-      if (dbMatch) {
-        // Use database answer
-        response = {
-          what: dbMatch.answer_text,
-          why: "This information is retrieved from our knowledge base and reflects current operational data.",
-          recommendation: "For more specific insights, please ask follow-up questions or request detailed analysis.",
-          charts: [], // Database answers don't include charts by default
-          references: []
-        };
-        
-        // Get follow-up questions from database
-        const dbFollowUps = await getFollowUpQuestions(dbMatch.id);
-        followUpQuestions = dbFollowUps.map(fq => fq.question_text);
-      } else {
-        // Fall back to generated response
-        const matchingQA = supplyChainQAs.find(qa => 
-          qa.query.toLowerCase().includes(question.toLowerCase()) ||
-          question.toLowerCase().includes(qa.query.toLowerCase())
-        );
-        
-        response = matchingQA ? matchingQA.content : generateRealisticResponse(question);
+      if (matchingQA) {
+        // Use rich sample data with charts and references
+        response = matchingQA.content;
         followUpQuestions = await getNextQuestions(question);
+      } else {
+        // Second priority: Try database for exact matches
+        const dbMatch = await findBestMatch(question);
+        
+        if (dbMatch) {
+          // Use database answer but enhance it with references
+          response = {
+            what: dbMatch.answer_text,
+            why: "This information is retrieved from our knowledge base and reflects current operational data.",
+            recommendation: "For more specific insights, please ask follow-up questions or request detailed analysis.",
+            charts: [], // Database answers don't include charts by default
+            references: [
+              // Add sample references to enable PDF functionality
+              {
+                id: 1,
+                document: "knowledge-base-extract.pdf",
+                title: "Knowledge Base Analysis",
+                excerpt: dbMatch.answer_text.substring(0, 100) + "...",
+                page: 1
+              }
+            ]
+          };
+          
+          // Get follow-up questions from database
+          const dbFollowUps = await getFollowUpQuestions(dbMatch.id);
+          followUpQuestions = dbFollowUps.map(fq => fq.question_text);
+        } else {
+          // Last fallback: Generate realistic response with full references
+          response = generateRealisticResponse(question);
+          followUpQuestions = await getNextQuestions(question);
+        }
       }
       
       // Simulate realistic processing time
