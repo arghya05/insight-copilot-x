@@ -38,9 +38,10 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
     onActiveMessageChange(message); // Set the new message as active
   };
 
-  // Expose function to add messages from search bar
+  // Expose function to handle questions from search bar
   useEffect(() => {
     (window as any).addMessageToChatArea = addMessage;
+    (window as any).handleChatAreaQuestion = handleQuestionClick;
   }, []);
 
   const filteredMessages = showAnomaliesOnly 

@@ -15,29 +15,13 @@ const Index = () => {
   const [highlightedText, setHighlightedText] = useState<string>("");
   const [activeMessage, setActiveMessage] = useState<ChatMessage | null>(null);
 
-      const handleSubmitQuery = (submittedQuery: string) => {
-        // Find matching response from sample data or create new one
-        const matchingQA = supplyChainQAs.find(qa => 
-          qa.query.toLowerCase().includes(submittedQuery.toLowerCase()) ||
-          submittedQuery.toLowerCase().includes(qa.query.toLowerCase())
-        );
-        
-        if (matchingQA) {
-          const newMessage: ChatMessage = {
-            id: Date.now().toString(),
-            type: "answer", 
-            query: submittedQuery,
-            content: matchingQA.content,
-            timestamp: new Date()
-          };
-          // Add to chat area messages
-          if ((window as any).addMessageToChatArea) {
-            (window as any).addMessageToChatArea(newMessage);
-          }
-        }
-        
-        setQuery("");
-      };
+  const handleSubmitQuery = (submittedQuery: string) => {
+    // Use the ChatArea's question handling mechanism which includes the delay
+    if ((window as any).handleChatAreaQuestion) {
+      (window as any).handleChatAreaQuestion(submittedQuery);
+    }
+    setQuery("");
+  };
 
   // When a new answer becomes active, reset any manual document selection and highlight
   useEffect(() => {
