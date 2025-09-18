@@ -75,13 +75,14 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
   };
 
   const handleQuestionClick = async (question: string) => {
-    // Clear previous conversation for a fresh start
+    // Immediately clear everything for a fresh start
     setMessages([]);
-    setNextQuestions([]); // Clear previous next questions
-    
-    // Set loading state
+    setNextQuestions([]);
     setIsLoading(true);
     setLoadingQuestion(question);
+    
+    // Small delay to ensure UI updates before processing
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     try {
       // First priority: Check if we have rich sample data with charts and references
@@ -130,8 +131,8 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
         }
       }
       
-      // Simulate realistic processing time
-      const processingTime = 1500 + Math.random() * 1500;
+      // Simulate realistic processing time - minimum 2 seconds for better UX
+      const processingTime = 2000 + Math.random() * 2000;
       await new Promise(resolve => setTimeout(resolve, processingTime));
       
       const newMessage: ChatMessage = {
@@ -142,10 +143,13 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
         timestamp: new Date()
       };
       
-      // Clear loading state and add message first
+      // Clear loading state and add message
       setIsLoading(false);
       setLoadingQuestion("");
       addMessage(newMessage);
+      
+      // Small delay before showing next questions for smoother UX
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       // Set next questions immediately after adding the message
       if (followUpQuestions.length > 0) {
@@ -174,6 +178,11 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
       
     } catch (error) {
       console.error('Error handling question:', error);
+      
+      // Even on error, ensure minimum processing time
+      const processingTime = 2000 + Math.random() * 1000;
+      await new Promise(resolve => setTimeout(resolve, processingTime));
+      
       // Fallback to original behavior
       const matchingQA = supplyChainQAs.find(qa => 
         qa.query.toLowerCase().includes(question.toLowerCase()) ||
