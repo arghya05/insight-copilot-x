@@ -4,6 +4,14 @@ import { SuggestedQuestions } from "@/components/SuggestedQuestions";
 import { AnomalyCard } from "@/components/AnomalyCard";
 import { supplyChainQAs, additionalQuestions, pdfDocuments } from "@/data/sampleData";
 import type { ChatMessage } from "@/data/sampleData";
+import { 
+  findBestMatch, 
+  getFollowUpQuestions, 
+  saveConversation, 
+  getStarterQuestions,
+  getRandomQuestions 
+} from "@/lib/questionService";
+import { StarterQuestions } from "@/components/StarterQuestions";
 
 interface ChatAreaProps {
   showAnomaliesOnly: boolean;
@@ -16,6 +24,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingQuestion, setLoadingQuestion] = useState<string>("");
+  const [nextQuestions, setNextQuestions] = useState<string[]>([]);
   let idCounter = 0;
   const genId = () => `${Date.now()}-${++idCounter}`;
 
@@ -38,38 +47,31 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
     ? messages.filter(msg => msg.type === 'anomaly')
     : messages;
 
-  const getNextQuestions = (q: string): string[] => {
-    const l = (q || "").toLowerCase();
-    const allQuestions = additionalQuestions;
-    
-    if (l.includes("freight") || l.includes("cost")) {
-      return [
-        "Which regions have the highest transportation costs?",
-        "What's the impact of fuel price volatility on our routes?"
-      ];
+  const getNextQuestions = async (q: string): Promise<string[]> => {
+    try {
+      // Get random questions from database as follow-ups
+      const randomQuestions = await getRandomQuestions(4);
+      return randomQuestions.map(question => question.question_text).slice(0, 2);
+    } catch (error) {
+      console.error('Error fetching next questions:', error);
+      // Fallback to hardcoded questions
+      const l = (q || "").toLowerCase();
+      
+      if (l.includes("freight") || l.includes("cost")) {
+        return [
+          "Which regions have the highest transportation costs?",
+          "What's the impact of fuel price volatility on our routes?"
+        ];
+      }
+      if (l.includes("supplier") || l.includes("contract")) {
+        return [
+          "Which suppliers provide the best quality metrics?",
+          "What's the average time to resolve supplier disputes?"
+        ];
+      }
+      
+      return additionalQuestions.slice(0, 2);
     }
-    if (l.includes("supplier") || l.includes("contract")) {
-      return [
-        "Which suppliers provide the best quality metrics?",
-        "What's the average time to resolve supplier disputes?"
-      ];
-    }
-    if (l.includes("inventory") || l.includes("holding")) {
-      return [
-        "Which product categories have the most stockouts?",
-        "How effective are our demand forecasting models?"
-      ];
-    }
-    if (l.includes("port") || l.includes("delay")) {
-      return [
-        "Which trade lanes show the most delays?",
-        "How do seasonal patterns affect logistics performance?"
-      ];
-    }
-    
-    // Return random questions for other queries
-    const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 2);
   };
 
   const handleQuestionClick = async (question: string) => {
@@ -80,31 +82,97 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
     setIsLoading(true);
     setLoadingQuestion(question);
     
-    // Simulate realistic processing time (1.5-3 seconds)
-    const processingTime = 1500 + Math.random() * 1500;
-    
-    await new Promise(resolve => setTimeout(resolve, processingTime));
-    
-    // Find matching response from sample data or create realistic response
-    const matchingQA = supplyChainQAs.find(qa => 
-      qa.query.toLowerCase().includes(question.toLowerCase()) ||
-      question.toLowerCase().includes(qa.query.toLowerCase())
-    );
-    
-    const response = matchingQA ? matchingQA.content : generateRealisticResponse(question);
-    
-    const newMessage: ChatMessage = {
-      id: genId(),
-      type: "answer",
-      query: question,
-      content: response,
-      timestamp: new Date()
-    };
-    
-    // Clear loading state and add message
-    setIsLoading(false);
-    setLoadingQuestion("");
-    addMessage(newMessage);
+    try {
+      // First try to find exact match in database
+      const dbMatch = await findBestMatch(question);
+      
+      let response;
+      let followUpQuestions: string[] = [];
+      
+      if (dbMatch) {
+        // Use database answer
+        response = {
+          what: dbMatch.answer_text,
+          why: "This information is retrieved from our knowledge base and reflects current operational data.",
+          recommendation: "For more specific insights, please ask follow-up questions or request detailed analysis.",
+          charts: [], // Database answers don't include charts by default
+          references: []
+        };
+        
+        // Get follow-up questions from database
+        const dbFollowUps = await getFollowUpQuestions(dbMatch.id);
+        followUpQuestions = dbFollowUps.map(fq => fq.question_text);
+      } else {
+        // Fall back to generated response
+        const matchingQA = supplyChainQAs.find(qa => 
+          qa.query.toLowerCase().includes(question.toLowerCase()) ||
+          question.toLowerCase().includes(qa.query.toLowerCase())
+        );
+        
+        response = matchingQA ? matchingQA.content : generateRealisticResponse(question);
+        followUpQuestions = await getNextQuestions(question);
+      }
+      
+      // Simulate realistic processing time
+      const processingTime = 1500 + Math.random() * 1500;
+      await new Promise(resolve => setTimeout(resolve, processingTime));
+      
+      const newMessage: ChatMessage = {
+        id: genId(),
+        type: "answer",
+        query: question,
+        content: response,
+        timestamp: new Date()
+      };
+      
+      // Save conversation to database
+      try {
+        await saveConversation(question, JSON.stringify(response), followUpQuestions);
+      } catch (error) {
+        console.error('Error saving conversation:', error);
+      }
+      
+      // Clear loading state and add message
+      setIsLoading(false);
+      setLoadingQuestion("");
+      addMessage(newMessage);
+      
+      // Load next questions asynchronously 
+      if (followUpQuestions.length > 0) {
+        setNextQuestions(followUpQuestions);
+      } else {
+        try {
+          const asyncFollowUps = await getNextQuestions(question);
+          setNextQuestions(asyncFollowUps);
+        } catch (error) {
+          console.error('Error loading follow-up questions:', error);
+          setNextQuestions([]);
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error handling question:', error);
+      // Fallback to original behavior
+      const matchingQA = supplyChainQAs.find(qa => 
+        qa.query.toLowerCase().includes(question.toLowerCase()) ||
+        question.toLowerCase().includes(qa.query.toLowerCase())
+      );
+      
+      const response = matchingQA ? matchingQA.content : generateRealisticResponse(question);
+      
+      const newMessage: ChatMessage = {
+        id: genId(),
+        type: "answer",
+        query: question,
+        content: response,
+        timestamp: new Date()
+      };
+      
+      setIsLoading(false);
+      setLoadingQuestion("");
+      addMessage(newMessage);
+      setNextQuestions([]); // Clear next questions on error
+    }
   };
 
   const generateRealisticResponse = (question: string) => {
@@ -492,7 +560,7 @@ export const ChatArea = ({ showAnomaliesOnly, onDocumentSelect, onHighlightText,
             
             {message === filteredMessages[filteredMessages.length - 1] && (
               <SuggestedQuestions 
-                questions={getNextQuestions(message.query)} 
+                questions={nextQuestions} 
                 onQuestionClick={handleQuestionClick}
                 isLoading={isLoading}
               />

@@ -14,7 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversation_history: {
+        Row: {
+          answer: string
+          created_at: string
+          follow_up_questions: string[] | null
+          id: string
+          question: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          follow_up_questions?: string[] | null
+          id?: string
+          question: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          follow_up_questions?: string[] | null
+          id?: string
+          question?: string
+        }
+        Relationships: []
+      }
+      follow_up_questions: {
+        Row: {
+          created_at: string
+          id: string
+          parent_question_id: string | null
+          question_text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          parent_question_id?: string | null
+          question_text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          parent_question_id?: string | null
+          question_text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follow_up_questions_parent_question_id_fkey"
+            columns: ["parent_question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      questions: {
+        Row: {
+          answer_text: string
+          category: string | null
+          created_at: string
+          id: string
+          question_text: string
+          updated_at: string
+        }
+        Insert: {
+          answer_text: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          question_text: string
+          updated_at?: string
+        }
+        Update: {
+          answer_text?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          question_text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
