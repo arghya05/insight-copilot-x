@@ -44,10 +44,10 @@ const Index = () => {
             />
             <div>
               <h1 className="text-2xl font-semibold text-foreground">
-                Algonomy Supply Chain Control Tower
+                Algonomy Document AI
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
-                AI-powered supply chain and document analysis
+                AI-powered document analysis and supply chain intelligence
               </p>
             </div>
           </div>
